@@ -2,122 +2,132 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminal de Campo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
-  :root{--bg:#080808;--bg2:#0e0e0e;--bg3:#141414;--bg4:#1a1a1a;--gold:#c9742e;--gold2:#e08c3e;--gold-dim:#6b3a18;--text:#e8e0d0;--text-dim:#7a7060;--text-mid:#a89878;--border:#2a2010;--border2:#3a2c18;--red:#8b2020;--red-lt:#c47070;--green:#1a4a2a;--green-lt:#5a9a6a;--purple:#3a1a5a;--purple-lt:#9a70ca;--r:2px}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px}
-  .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(201,116,46,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,116,46,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-  .corner{position:fixed;width:90px;height:90px;opacity:.1;pointer-events:none;z-index:0}
-  .corner.tl{top:0;left:0;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
-  .corner.tr{top:0;right:0;border-top:1px solid var(--gold);border-right:1px solid var(--gold)}
-  .corner.bl{bottom:0;left:0;border-bottom:1px solid var(--gold);border-left:1px solid var(--gold)}
-  .corner.br{bottom:0;right:0;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
-  .cls-tag{position:fixed;top:1rem;right:1rem;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.3em;color:var(--red-lt);border:1px solid var(--red);padding:.3rem .6rem;opacity:.55;z-index:50}
-  #ls{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;position:relative;z-index:1}
-  .lb{width:100%;max-width:380px;text-align:center}
-  .logo-img{width:64px;height:auto;filter:drop-shadow(0 0 10px rgba(201,116,46,.4));margin-bottom:.5rem}
-  .logo-l{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.9rem auto}
-  .logo-n{font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.4em;color:var(--text-dim);text-transform:uppercase;margin-bottom:2.5rem}
-  .lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.4rem;text-align:left}
-  .inp{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:.7rem .9rem;margin-bottom:1.1rem;outline:none;border-radius:var(--r);letter-spacing:.05em}
-  .inp:focus{border-color:var(--gold)}
-  .btn-login{width:100%;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;padding:.8rem;cursor:pointer;border-radius:var(--r)}
-  .btn-login:hover{background:var(--gold);color:var(--bg)}
-  .err{color:var(--red-lt);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-align:center;margin-top:1rem;opacity:0;transition:opacity .3s}
-  .err.show{opacity:1}
-  #dash{display:none;min-height:100vh;position:relative;z-index:1}
-  .topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 1.5rem;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
-  .tlogo{display:flex;align-items:center;gap:.6rem}
-  .tlogo img{height:24px;width:auto}
-  .tlogo-txt{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--text-dim)}
-  .atag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--gold);background:rgba(201,116,46,.08);border:1px solid var(--gold-dim);padding:.3rem .6rem;border-radius:var(--r)}
-  .tright{display:flex;align-items:center;gap:1rem}
-  .btn-out{background:none;border:none;color:var(--text-dim);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;cursor:pointer;text-transform:uppercase}
-  .btn-out:hover{color:var(--red-lt)}
-  .dbody{padding:1.75rem;max-width:1080px;margin:0 auto}
-  .dhead{margin-bottom:1.75rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
-  .deyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.35em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.5rem}
-  .dtitle{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--text)}
-  .dtitle span{color:var(--gold)}
-  .agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.9rem;margin-top:1.4rem}
-  .acard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;position:relative;overflow:hidden}
-  .acard:hover{border-color:var(--gold-dim);background:var(--bg4)}
-  .acard.locked{cursor:default}
-  .acard.locked:hover{border-color:var(--border);background:var(--bg3)}
-  .av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:15px;margin-bottom:.7rem;border:1px solid;flex-shrink:0}
-  .aname{font-size:13px;color:var(--text);font-weight:500;margin-bottom:.2rem}
-  .arole{font-family:'Space Mono',monospace;font-size:7.5px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem;min-height:18px}
-  .abadges{display:flex;flex-wrap:wrap;gap:.3rem}
-  .abadge{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.08em;padding:.15rem .4rem;border:1px solid var(--border2);border-radius:var(--r);color:var(--text-dim)}
-  .locked-ov{position:absolute;inset:0;background:rgba(8,8,8,.78);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.15em;color:var(--text-dim)}
-  #fv{display:none}
-  .fbk{display:flex;align-items:center;gap:.5rem;background:none;border:none;color:var(--text-dim);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;margin-bottom:1.2rem;padding:0}
-  .fbk:hover{color:var(--gold)}
-  .fhero{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:1.5rem;margin-bottom:1.1rem;display:flex;align-items:flex-start;gap:1.25rem;flex-wrap:wrap}
-  .fav{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;flex-shrink:0;border:1px solid}
-  .fhinfo{flex:1;min-width:200px}
-  .fname{font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:400;color:var(--text);margin-bottom:.25rem;line-height:1.2}
-  .fsub{font-size:11.5px;color:var(--text-mid);margin-bottom:.65rem;line-height:1.4}
-  .fbadges{display:flex;flex-wrap:wrap;gap:.3rem}
-  .fb{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .5rem;border:1px solid;border-radius:var(--r);white-space:nowrap}
-  .fb-gold{border-color:var(--gold-dim);color:var(--gold);background:rgba(201,116,46,.06)}
-  .fb-dim{border-color:var(--border2);color:var(--text-dim);background:var(--bg4)}
-  .fb-green{border-color:#2a5a3a;color:var(--green-lt);background:rgba(26,74,42,.3)}
-  .fb-red{border-color:#5a2020;color:var(--red-lt);background:rgba(139,32,32,.2)}
-  .fb-amber{border-color:#5a4010;color:#d4a030;background:rgba(90,64,16,.3)}
-  .chat-wrap{background:#0a0e0a;border:1px solid #1e2a1e;border-radius:var(--r);margin-bottom:1.1rem;overflow:hidden}
-  .chat-head{background:#101510;border-bottom:1px solid #1e2a1e;padding:.5rem .9rem;display:flex;align-items:center;gap:.5rem}
-  .chat-dot{width:6px;height:6px;border-radius:50%;background:#3a9a5a;box-shadow:0 0 6px #3a9a5a;flex-shrink:0}
-  .chat-head-txt{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.15em;color:#7aa88a;text-transform:uppercase}
-  .chat-body{padding:.9rem}
-  .chat-bubble{background:#13201a;border-radius:10px 10px 10px 2px;padding:.65rem .85rem;max-width:100%}
-  .chat-sender{font-family:'Space Mono',monospace;font-size:8px;color:#5a9a6a;letter-spacing:.12em;margin-bottom:.35rem;text-transform:uppercase}
-  .chat-text-native{font-size:12px;color:#d8e8dc;line-height:1.5;margin-bottom:.5rem;font-style:italic;word-wrap:break-word}
-  .chat-divider{height:1px;background:#1e2a1e;margin:.45rem 0}
-  .chat-text-en{font-size:10.5px;color:#8aa090;line-height:1.5;word-wrap:break-word}
-  .chat-time{font-family:'Space Mono',monospace;font-size:7px;color:#456050;margin-top:.45rem;text-align:right}
-  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
-  @media(max-width:680px){.fgrid{grid-template-columns:1fr}}
-  .fcol{display:flex;flex-direction:column;gap:.9rem;min-width:0}
-  .fsec{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-  .fsec-h{background:var(--bg4);border-bottom:1px solid var(--border);padding:.45rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
-  .fsec-lbl{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.25em;text-transform:uppercase}
-  .fsec-b{padding:.8rem .9rem}
-  .ftext{color:var(--text-mid);line-height:1.6;font-size:12px}
-  .sgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}
-  .scell{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:.5rem .25rem;text-align:center}
-  .sv{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--gold);line-height:1}
-  .sl{font-family:'Space Mono',monospace;font-size:6.5px;color:var(--text-dim);letter-spacing:.15em;margin-top:3px}
-  .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
-  .rcell{background:var(--bg4);border-radius:var(--r);padding:.55rem .35rem;text-align:center;border-top:2px solid}
-  .rv{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:var(--text);line-height:1.15}
-  .rl{font-family:'Space Mono',monospace;font-size:6.5px;color:var(--text-dim);letter-spacing:.15em;margin-top:3px}
-  .rsub{font-size:7px;color:var(--text-dim);margin-top:2px;opacity:.7;line-height:1.3}
-  .prow{display:flex;align-items:center;justify-content:space-between;padding:.28rem 0;border-bottom:1px solid var(--border);gap:.5rem}
-  .prow:last-child{border-bottom:none}
-  .pn{font-size:11.5px;color:var(--text)}
-  .pb{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;padding:.1rem .4rem;border-radius:var(--r);flex-shrink:0}
-  .b5{color:#5a9a6a;background:rgba(26,74,42,.4)}
-  .b10{color:var(--gold);background:rgba(201,116,46,.1)}
-  .b15{color:#c47070;background:rgba(139,32,32,.2)}
-  .hitem{border-left:2px solid var(--gold-dim);padding:.4rem .65rem;margin-bottom:.5rem;background:var(--bg4);border-radius:0 var(--r) var(--r) 0}
-  .hitem:last-child{margin-bottom:0}
-  .hn{font-size:10.5px;font-weight:600;color:var(--gold);margin-bottom:.2rem}
-  .hd{font-size:10.5px;color:var(--text-dim);line-height:1.45}
-  .eitem{border-left:2px solid var(--border2);padding:.4rem .65rem;margin-bottom:.5rem;background:var(--bg4);border-radius:0 var(--r) var(--r) 0}
-  .eitem:last-child{margin-bottom:0}
-  .en{font-size:10.5px;font-weight:600;color:var(--text-mid);margin-bottom:.2rem}
-  .ed{font-size:10.5px;color:var(--text-dim);line-height:1.45}
-  .sbox{background:rgba(58,26,90,.2);border:1px solid rgba(58,26,90,.5);border-radius:var(--r);padding:.65rem;font-size:11.5px;color:var(--purple-lt);line-height:1.55}
-  .ph{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--gold2);letter-spacing:.1em;margin-bottom:.45rem;font-weight:700}
-  .preq{font-size:10.5px;color:var(--text-dim);padding:.4rem .65rem;background:var(--bg4);border-radius:var(--r);margin-bottom:.6rem;line-height:1.5;border-left:2px solid var(--purple-lt)}
-  .pniv{margin-bottom:.5rem;padding:.4rem .65rem;background:var(--bg4);border-radius:var(--r)}
-  .pniv:last-child{margin-bottom:0}
-  .pnn{font-size:10.5px;font-weight:600;margin-bottom:.2rem}
-  .pnd{font-size:10.5px;color:var(--text-dim);line-height:1.45}
-  .def-note{font-size:9.5px;color:var(--text-dim);margin-top:.5rem;font-style:italic;line-height:1.4}
-  .gp-tag{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.1em;padding:.15rem .4rem;border-radius:var(--r);background:rgba(201,116,46,.15);color:var(--gold2)}
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+:root{--bg:#080808;--bg2:#0e0e0e;--bg3:#141414;--bg4:#1a1a1a;--gold:#c9742e;--gold2:#e08c3e;--gold-dim:#6b3a18;--text:#e8e0d0;--text-dim:#7a7060;--text-mid:#a89878;--border:#2a2010;--border2:#3a2c18;--red:#8b2020;--red-lt:#c47070;--green-lt:#5a9a6a;--purple-lt:#9a70ca;--blue-lt:#6aabef;--r:2px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px;min-height:100vh;overflow-x:hidden}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(201,116,46,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,116,46,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.corner{position:fixed;width:100px;height:100px;opacity:.12;pointer-events:none;z-index:0}
+.corner.tl{top:0;left:0;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+.corner.tr{top:0;right:0;border-top:1px solid var(--gold);border-right:1px solid var(--gold)}
+.corner.bl{bottom:0;left:0;border-bottom:1px solid var(--gold);border-left:1px solid var(--gold)}
+.corner.br{bottom:0;right:0;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
+.cls-tag{position:fixed;top:1.2rem;right:1.2rem;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.3em;color:var(--red-lt);border:1px solid var(--red);padding:.3rem .6rem;opacity:.6;z-index:999;pointer-events:none}
+
+/* LOGIN */
+#ls{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.lb{width:100%;max-width:400px;text-align:center}
+.logo-wrap{margin-bottom:.5rem}
+.logo-l{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto}
+.logo-n{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5em;color:var(--text-dim);text-transform:uppercase;margin-bottom:3rem}
+.lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.4rem;text-align:left}
+.inp{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:.75rem 1rem;margin-bottom:1.2rem;outline:none;border-radius:var(--r);transition:border-color .2s;letter-spacing:.05em}
+.inp:focus{border-color:var(--gold)}
+.btn-login{width:100%;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;padding:.85rem;cursor:pointer;transition:all .2s;border-radius:var(--r)}
+.btn-login:hover{background:var(--gold);color:var(--bg)}
+.err{color:var(--red-lt);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-align:center;margin-top:1rem;display:none}
+.err.show{display:block}
+
+/* DASHBOARD */
+#dash{display:none;position:relative;z-index:1;min-height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 2rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tlogo{display:flex;align-items:center;gap:.7rem}
+.tlogo-txt{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;color:var(--text-dim)}
+.atag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--gold);background:rgba(201,116,46,.08);border:1px solid var(--gold-dim);padding:.3rem .7rem;border-radius:var(--r)}
+.tright{display:flex;align-items:center;gap:1.2rem;margin-right:6.5rem}
+.btn-out{display:flex;align-items:center;gap:.4rem;background:rgba(139,32,32,.08);border:1px solid #5a2020;color:var(--red-lt);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;cursor:pointer;text-transform:uppercase;transition:all .2s;padding:.4rem .8rem;border-radius:var(--r)}
+.btn-out svg{width:11px;height:11px;flex-shrink:0}
+.btn-out:hover{background:var(--red-lt);color:var(--bg);border-color:var(--red-lt)}
+.dbody{padding:2rem;max-width:1100px;margin:0 auto}
+.dhead{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.deyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.4em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.5rem}
+.dtitle{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--text);letter-spacing:.05em}
+.dtitle span{color:var(--gold)}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem;margin-top:1.5rem}
+.acard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.acard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .2s}
+.acard.unlocked:hover{border-color:var(--gold-dim);background:var(--bg4)}
+.acard.unlocked:hover::after{opacity:1}
+.acard.locked{cursor:default}
+.av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;margin-bottom:.75rem;border:1px solid;flex-shrink:0}
+.aname{font-size:13px;color:var(--text);font-weight:500;margin-bottom:.2rem}
+.arole{font-family:'Space Mono',monospace;font-size:7.5px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem}
+.abadges{display:flex;flex-wrap:wrap;gap:.3rem}
+.abadge{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.1em;padding:.15rem .4rem;border:1px solid var(--border2);border-radius:var(--r);color:var(--text-dim)}
+.locked-ov{position:absolute;inset:0;background:rgba(8,8,8,.78);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;color:var(--text-dim)}
+
+/* FICHA */
+#fv{display:none}
+.fbk{display:flex;align-items:center;gap:.5rem;background:none;border:none;color:var(--text-dim);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-bottom:1.5rem;transition:color .2s;padding:0}
+.fbk:hover{color:var(--gold)}
+.fhero{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:1.75rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:1.5rem;position:relative;overflow:hidden}
+.fhero::before{content:'';position:absolute;top:0;right:0;width:180px;height:100%;background:linear-gradient(270deg,rgba(201,116,46,.04),transparent);pointer-events:none}
+.fav{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;flex-shrink:0;border:1px solid;position:relative;z-index:1}
+.fhinfo{flex:1;position:relative;z-index:1}
+.fname{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;color:var(--text);letter-spacing:.05em;margin-bottom:.3rem}
+.fsub{font-size:12px;color:var(--text-mid);margin-bottom:.75rem}
+.fbadges{display:flex;flex-wrap:wrap;gap:.35rem}
+.fb{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.15em;text-transform:uppercase;padding:.2rem .55rem;border:1px solid;border-radius:var(--r);white-space:nowrap}
+.fb-gold{border-color:var(--gold-dim);color:var(--gold);background:rgba(201,116,46,.06)}
+.fb-dim{border-color:var(--border2);color:var(--text-dim);background:var(--bg4)}
+.fb-green{border-color:#2a5a3a;color:var(--green-lt);background:rgba(26,74,42,.3)}
+.fb-red{border-color:#5a2020;color:var(--red-lt);background:rgba(139,32,32,.2)}
+.fb-amber{border-color:#5a4010;color:#d4a030;background:rgba(90,64,16,.3)}
+.gameplay-tag{font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.08em;color:var(--blue-lt);background:rgba(26,58,90,.25);border:1px solid #2a4a6a;border-radius:var(--r);padding:.5rem .8rem;margin-bottom:1.25rem;line-height:1.55}
+.chat-wrap{background:#0a0e0a;border:1px solid #1e2a1e;border-radius:var(--r);margin-bottom:1.25rem;overflow:hidden}
+.chat-head{background:#101510;border-bottom:1px solid #1e2a1e;padding:.55rem 1rem;display:flex;align-items:center;gap:.5rem}
+.chat-dot{width:6px;height:6px;border-radius:50%;background:#3a9a5a;box-shadow:0 0 6px #3a9a5a;flex-shrink:0}
+.chat-head-txt{font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:#7aa88a;text-transform:uppercase}
+.chat-body{padding:1rem}
+.chat-bubble{background:#13201a;border-radius:10px 10px 10px 2px;padding:.7rem .9rem}
+.chat-sender{font-family:'Space Mono',monospace;font-size:8.5px;color:#5a9a6a;letter-spacing:.15em;margin-bottom:.4rem;text-transform:uppercase}
+.chat-nat{font-size:12.5px;color:#d8e8dc;line-height:1.6;margin-bottom:.6rem;font-style:italic;word-wrap:break-word}
+.chat-div{height:1px;background:#1e2a1e;margin:.6rem 0}
+.chat-en{font-size:11px;color:#8aa090;line-height:1.55}
+.chat-time{font-family:'Space Mono',monospace;font-size:7.5px;color:#456050;margin-top:.6rem;text-align:right}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:700px){.fgrid{grid-template-columns:1fr}}
+.fcol{display:flex;flex-direction:column;gap:1rem;min-width:0}
+.fsec{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.fsec-h{background:var(--bg4);border-bottom:1px solid var(--border);padding:.5rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.fsec-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.3em;text-transform:uppercase}
+.fsec-b{padding:.85rem 1rem}
+.ftext{color:var(--text-mid);line-height:1.65;font-size:12.5px}
+.sgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}
+.scell{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:.55rem .2rem;text-align:center;min-width:0}
+.sv{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;color:var(--gold);line-height:1}
+.sl{font-family:'Space Mono',monospace;font-size:6.3px;color:var(--text-dim);letter-spacing:.15em;margin-top:4px}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
+.rcell{background:var(--bg4);border-radius:var(--r);padding:.6rem .3rem;text-align:center;border-top:2px solid;min-width:0}
+.rv{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--text);line-height:1.1}
+.rl{font-family:'Space Mono',monospace;font-size:6.3px;color:var(--text-dim);letter-spacing:.15em;margin-top:4px}
+.rsub{font-size:7px;color:var(--text-dim);margin-top:2px;opacity:.75}
+.prow{display:flex;align-items:center;justify-content:space-between;padding:.32rem 0;border-bottom:1px solid var(--border);gap:.5rem}
+.prow:last-child{border-bottom:none}
+.pn{font-size:12px;color:var(--text)}
+.pb{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:.1rem .45rem;border-radius:var(--r);flex-shrink:0}
+.b5{color:#5a9a6a;background:rgba(26,74,42,.4)}
+.b10{color:var(--gold);background:rgba(201,116,46,.12)}
+.b15{color:#c47070;background:rgba(139,32,32,.2)}
+.hitem{border-left:2px solid var(--gold-dim);padding:.45rem .7rem;margin-bottom:.55rem;background:var(--bg4);border-radius:0 var(--r) var(--r) 0}
+.hitem:last-child{margin-bottom:0}
+.hn{font-size:11px;font-weight:600;color:var(--gold);margin-bottom:.25rem}
+.hd{font-size:11px;color:var(--text-dim);line-height:1.55}
+.eitem{border-left:2px solid var(--border2);padding:.45rem .7rem;margin-bottom:.55rem;background:var(--bg4);border-radius:0 var(--r) var(--r) 0}
+.eitem:last-child{margin-bottom:0}
+.en{font-size:11px;font-weight:600;color:var(--text-mid);margin-bottom:.25rem}
+.ed{font-size:11px;color:var(--text-dim);line-height:1.55}
+.sbox{background:rgba(58,26,90,.2);border:1px solid rgba(58,26,90,.5);border-radius:var(--r);padding:.7rem;font-size:12px;color:var(--purple-lt);line-height:1.6}
+.ph{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:.1em;margin-bottom:.5rem;font-weight:700}
+.preq{font-size:11px;color:var(--text-dim);padding:.5rem .7rem;background:var(--bg4);border-radius:var(--r);margin-bottom:.65rem;line-height:1.55;border-left:2px solid var(--purple-lt)}
+.pniv{margin-bottom:.55rem;padding:.5rem .7rem;background:var(--bg4);border-radius:var(--r)}
+.pniv:last-child{margin-bottom:0}
+.pnn{font-size:11px;font-weight:600;margin-bottom:.25rem}
+.pnd{font-size:11px;color:var(--text-dim);line-height:1.55}
+.def-note{font-size:10px;color:var(--text-dim);margin-top:.6rem;font-style:italic;line-height:1.5}
 </style>
 </head>
 <body>
@@ -125,9 +135,24 @@
 <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
 <div class="cls-tag">CLASSIFIED</div>
 
+<!-- LOGIN -->
 <div id="ls">
   <div class="lb">
-    <img class="logo-img" src="data:image/png;base64,LOGOPLACEHOLDER">
+    <div class="logo-wrap">
+      <svg width="70" height="100" viewBox="0 0 70 100" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 12px rgba(201,116,46,.35))">
+        <defs>
+          <linearGradient id="logoGradLogin" x1="10%" y1="0%" x2="90%" y2="100%">
+            <stop offset="0%" stop-color="#e8a35c"/>
+            <stop offset="45%" stop-color="#c9742e"/>
+            <stop offset="100%" stop-color="#6b3a18"/>
+          </linearGradient>
+        </defs>
+        <path d="M13 27 L7 12 L23 22 L35 4 L47 22 L63 12 L57 27 Q35 21 13 27 Z" fill="url(#logoGradLogin)"/>
+        <circle cx="23" cy="22.5" r="3.4" fill="url(#logoGradLogin)"/>
+        <circle cx="47" cy="22.5" r="3.4" fill="url(#logoGradLogin)"/>
+        <path d="M35 30 A27 27 0 1 0 35 96 A27 27 0 0 0 58 84 L47 76 A16 16 0 1 1 35 46 A16 16 0 0 1 47 54 L58 42 A27 27 0 0 0 35 30 Z" fill="url(#logoGradLogin)"/>
+      </svg>
+    </div>
     <div class="logo-l"></div>
     <div class="logo-n">Sistema de Acesso Seguro — Terminal de Campo</div>
     <div class="lbl">Identificador de Agente</div>
@@ -139,15 +164,31 @@
   </div>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dash">
   <div class="topbar">
     <div class="tlogo">
-      <img src="data:image/png;base64,LOGOPLACEHOLDER">
+      <svg width="23" height="33" viewBox="0 0 70 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGradTop" x1="10%" y1="0%" x2="90%" y2="100%">
+            <stop offset="0%" stop-color="#e8a35c"/>
+            <stop offset="45%" stop-color="#c9742e"/>
+            <stop offset="100%" stop-color="#6b3a18"/>
+          </linearGradient>
+        </defs>
+        <path d="M13 27 L7 12 L23 22 L35 4 L47 22 L63 12 L57 27 Q35 21 13 27 Z" fill="url(#logoGradTop)"/>
+        <circle cx="23" cy="22.5" r="3.4" fill="url(#logoGradTop)"/>
+        <circle cx="47" cy="22.5" r="3.4" fill="url(#logoGradTop)"/>
+        <path d="M35 30 A27 27 0 1 0 35 96 A27 27 0 0 0 58 84 L47 76 A16 16 0 1 1 35 46 A16 16 0 0 1 47 54 L58 42 A27 27 0 0 0 35 30 Z" fill="url(#logoGradTop)"/>
+      </svg>
       <span class="tlogo-txt">TERMINAL DE CAMPO</span>
     </div>
     <div class="tright">
       <div class="atag" id="atag">AGENTE: —</div>
-      <button class="btn-out" onclick="doLogout()">[ sair ]</button>
+      <button class="btn-out" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </button>
     </div>
   </div>
   <div class="dbody">
@@ -166,168 +207,34 @@
 </div>
 
 <script>
-const A = [
-  {id:"volkov",initials:"DV",name:"Dmitri Volkov",nac:"Russo",idade:"41 anos",ocup:"Ex-Militar / Segurança Privada",classe:"Combatente",trilha:"Operações Especiais",origem:"Militar",dif:"Fácil",difb:"fb-green",ab:"#1E1B5E",at:"#EEEDFE",pw:"volkov1984",gp:"Dano alto, simples de jogar",
-  stats:{FOR:5,AGI:3,INT:1,PRE:1,VIG:4},pv:96,pe:30,san:39,desl:"12m",
-  defnote:"Defesa base 10. Bloqueio (Fortitude treinada) e Esquiva (Reflexos treinados) disponíveis como reacção.",
-  pericias:[["Luta","+15"],["Pontaria","+10"],["Atletismo","+10"],["Fortitude","+10"],["Intimidação","+10"],["Reflexos","+10"],["Sobrevivência","+5"],["Percepção","+5"]],
-  bg:"Dmitri Volkov serviu 12 anos nas forças especiais russas antes de desaparecer dos registos em 2019. Reapareceu em Lisboa como alegado consultor de segurança. A sua filha de 9 anos vive em São Petersburgo com a ex-mulher — todos os meses, uma transferência anónima chega à conta dela.",
-  segredo:"Volkov sabe que a sua filha está a ser usada como alavanca. Obedece. Por enquanto.",
-  chatNat:"Цель определена. Действуй по протоколу — никаких лишних свидетелей. Это последнее предупреждение от клиента.",
-  chatEn:"Target confirmed. Proceed per protocol — no unnecessary witnesses. This is the client's final warning.",
-  trilha_habs:[{n:"NEX 10% — A Favorita",d:"Escolha uma arma favorita. A categoria da arma escolhida é reduzida em 1."},{n:"NEX 40% — Técnica Secreta",d:"A arma favorita é reduzida em II. Gaste 2 PE para efeitos especiais (Amplo, Destruidor) ao atacar."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, sussurre o nome da sua filha (acção livre) para restaurar 1 Ponto de Êxtase.",ns:[{n:"1 Ponto — Por ela",c:"#D4AC0D",d:"Ignore Abalado e Com Medo durante 1 cena. +3 em ataques corpo a corpo."},{n:"2 Pontos — Sem nada a perder",c:"#C0392B",d:"Ataques causam +1d6 extra. Imune a derrubado/atordoado 1 cena. Perde 1d4 Sanidade no fim."}]},
-  equip:[{n:"Pistola Glock 17",d:"Dano 1d8 balístico. Alcance médio. 17 munições. Saque rápido."},{n:"Faca de Combate Ka-Bar",d:"Dano 1d4+FOR perfurante. Pode ser arremessada (–2 ataque)."},{n:"Colete Balístico Leve",d:"Protecção 2 balística. Discreto sob roupa larga."},{n:"Silenciador",d:"Elimina ruído. –1 dano. Percepção DT 18 para detectar."},{n:"Rádio Táctico Encriptado",d:"Alcance 5km urbano. Não rastreável."},{n:"Kit Primeiros Socorros ×2",d:"Restaura 1d6+2 PV a aliado estabilizado."}]},
+const A=[
+{id:"volkov",initials:"DV",name:"Dmitri Volkov",nac:"Russo",idade:"41 anos",ocup:"Ex-Militar / Segurança Privada",classe:"Combatente",trilha:"Operações Especiais",origem:"Militar",dif:"Fácil",difb:"fb-green",ab:"#1E1B5E",at:"#EEEDFE",pw:"volkov1984",gameplay:"Combatente directo — dano alto, tanque, linha da frente.",stats:{FOR:5,AGI:3,INT:1,PRE:1,VIG:4},pv:96,pe:30,san:39,desl:"12m",defnote:"Defesa base: 10. Bloqueio (reacção, Fortitude treinada) vs CaC. Esquiva (reacção, Reflexos treinados) vs qualquer ataque.",pericias:[["Luta","+15"],["Pontaria","+10"],["Atletismo","+10"],["Fortitude","+10"],["Intimidação","+10"],["Reflexos","+10"],["Sobrevivência","+5"],["Percepção","+5"]],bg:"Dmitri Volkov serviu 12 anos nas forças especiais russas antes de desaparecer dos registos em 2019. Reapareceu em Lisboa como consultor de segurança para uma firma de logística registada nas Ilhas Caimão. Os vizinhos descrevem-no como calmo, educado, e nunca em casa. A sua filha de 9 anos vive em São Petersburgo com a ex-mulher — todos os meses, uma transferência anónima chega à conta dela.",segredo:"Volkov sabe que a sua filha está a ser usada como alavanca. Obedece. Por enquanto.",chatNat:"Цель определена. Действуй по протоколу — никаких лишних свидетелей. Это последнее предупреждение от клиента: больше никаких ошибок.",chatEn:"Target confirmed. Proceed per protocol — no unnecessary witnesses. This is the client's final warning: no more mistakes.",trilha_habs:[{n:"NEX 10% — A Favorita",d:"Escolha uma arma favorita. A categoria da arma escolhida é reduzida em 1."},{n:"NEX 40% — Técnica Secreta",d:"A arma favorita passa a ser reduzida em II. Pode gastar 2 PE para executar efeitos especiais (Amplo, Destruidor) ao atacar."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, sussurre o nome da sua filha em voz alta (acção livre) para restaurar 1 Ponto de Êxtase.",ns:[{n:"1 Ponto — Por ela",c:"#D4AC0D",d:"Ignore Abalado e Com Medo durante 1 cena. Ganhe +3 em todos os ataques corpo a corpo."},{n:"2 Pontos — Sem nada a perder",c:"#C0392B",d:"Ataques causam +1d6 extra. Imune a derrubado/atordoado por 1 cena. Perde 1d4 Sanidade no fim."}]},equip:[{n:"Pistola Glock 17",d:"Arma de fogo, disparo. Dano 1d8 balístico. 17 munições. Saque rápido."},{n:"Faca de Combate Ka-Bar",d:"Arma simples. Dano 1d4+FOR perfurante. Leve. Pode ser arremessada."},{n:"Colete Balístico Leve",d:"Protecção 2 contra dano balístico. Discreto sob roupas largas."},{n:"Silenciador",d:"Elimina ruído do disparo. –1 dano. Detectar: Percepção DT 18."},{n:"Rádio Táctico Encriptado",d:"Comunicação segura, 5km urbano. Não rastreável."},{n:"Kit de Primeiros Socorros ×2",d:"Restaura 1d6+2 PV a aliado estabilizado. Acção padrão."}]},
 
-  {id:"wei",initials:"WL",name:"Wei Liáng",nac:"Chinês",idade:"51 anos",ocup:"Adido Cultural / Diplomata",classe:"Especialista",trilha:"Negociador",origem:"Diplomata",dif:"Difícil",difb:"fb-red",ab:"#0D2A4A",at:"#E6F1FB",pw:"liang1973",gp:"Social puro, sem combate",
-  stats:{FOR:1,AGI:2,INT:3,PRE:5,VIG:2},pv:63,pe:80,san:52,desl:"9m",
-  defnote:"Defesa base 10. Sem armadura — depende inteiramente da cobertura social.",
-  pericias:[["Diplomacia","+15"],["Enganação","+15"],["Intuição","+10"],["Investigação","+10"],["Atualidades","+10"],["Percepção","+5"]],
-  bg:"Wei Liáng tem 51 anos e uma carreira diplomática impecável. Fala seis línguas. A sua especialidade real é identificar o que as pessoas querem antes de elas próprias saberem.",
-  segredo:"Wei trabalha para duas entidades em simultâneo. Uma delas não sabe da outra.",
-  chatNat:"该物品绝不能落入公开市场。不惜一切代价确保它从目录中撤下。",
-  chatEn:"That item must never reach the open market. Ensure it's pulled from the catalogue by any means necessary.",
-  trilha_habs:[{n:"NEX 10% — Negociação Rápida",d:"Uma vez por cena, usa Diplomacia como acção de movimento."},{n:"NEX 40% — Contra-Oferta",d:"Ao falhar Diplomacia/Enganação, gaste 2 PE para rolar de novo."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, queime o nome da entidade a quem serve (acção padrão) para restaurar 2 Pontos.",ns:[{n:"1 Ponto — Lealdade Dupla",c:"#D4AC0D",d:"+5 em Enganação e Diplomacia 1 cena. Quem falhar Intuição passa a confiar em si."},{n:"2 Pontos — O Preço da Ambição",c:"#C0392B",d:"Alvo revela involuntariamente o seu maior segredo. Perde 2 Sanidade."}]},
-  equip:[{n:"Caneta-Gravador",d:"Grava 8h. Transmite por bluetooth a 30m."},{n:"Telemóvel Encriptado (2 SIMs)",d:"Apaga memória se confiscado."},{n:"Veneno de Contacto ×2",d:"Fortitude DT14 ou Incapacitado 1d4h."},{n:"Fato de Alta Costura",d:"+2 Diplomacia/Enganação em ambientes formais."},{n:"Cartão de Crédito (conta fantasma)",d:"Rastrear: Investigação DT20."}]},
+{id:"wei",initials:"WL",name:"Wei Liáng",nac:"Chinês",idade:"51 anos",ocup:"Adido Cultural / Diplomata",classe:"Especialista",trilha:"Negociador",origem:"Diplomata",dif:"Difícil",difb:"fb-red",ab:"#0D2A4A",at:"#E6F1FB",pw:"liang1973",gameplay:"Social/manipulação — domina conversas, extrai segredos, sem combate.",stats:{FOR:1,AGI:2,INT:3,PRE:5,VIG:2},pv:63,pe:80,san:52,desl:"9m",defnote:"Defesa base: 10. Sem armadura — usa posição social como protecção.",pericias:[["Diplomacia","+15"],["Enganação","+15"],["Intuição","+10"],["Investigação","+10"],["Atualidades","+10"],["Percepção","+5"]],bg:"Wei Liáng tem 51 anos e uma carreira diplomática impecável que o levou por Bruxelas, Viena e agora Lisboa. Fala seis línguas fluentemente. A sua especialidade real é identificar o que as pessoas querem antes de elas próprias saberem. Colecciona objectos com história obscura — peças que desapareceram de museus durante conflitos.",segredo:"Wei trabalha para duas entidades em simultâneo. Uma delas não sabe da outra.",chatNat:"该物品绝不能落入公开市场。不惜一切代价确保它从目录中撤下。这次行动比你想象的更重要。",chatEn:"That item must never reach the open market. Ensure it's pulled from the catalogue by any means. This operation matters more than you realise.",trilha_habs:[{n:"NEX 10% — Negociação Rápida",d:"Uma vez por cena, pode usar Diplomacia como acção de movimento em vez de padrão."},{n:"NEX 40% — Contra-Oferta",d:"Quando falha em Diplomacia ou Enganação, pode gastar 2 PE para rolar novamente e manter o melhor resultado."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, escreva o nome da entidade a quem serve e queime-o (acção padrão) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — Lealdade Dupla",c:"#D4AC0D",d:"+5 em Enganação e Diplomacia durante 1 cena. Quem falhe Intuição contra si passa a considerá-lo aliado de confiança."},{n:"2 Pontos — O Preço da Ambição",c:"#C0392B",d:"Um alvo em visão revela involuntariamente o seu maior segredo nesta cena. Perde 2 Sanidade."}]},equip:[{n:"Caneta-Gravador",d:"Grava 8h. Transmite via bluetooth encriptado até 30m."},{n:"Telemóvel Encriptado (2 SIMs)",d:"Memória apaga automaticamente em caso de confisco."},{n:"Veneno de Contacto ×2",d:"Aplicado em superfície. Fortitude DT 14 ou Incapacitado 1d4 horas."},{n:"Fato de Alta Costura",d:"+2 em Diplomacia e Enganação em ambientes formais."},{n:"Cartão de Crédito (conta fantasma)",d:"Rastrear exige Investigação DT 20."}]},
 
-  {id:"mariana",initials:"ME",name:"Mariana Esteves",nac:"Portuguesa",idade:"34 anos",ocup:"Consultora de Cibersegurança",classe:"Especialista",trilha:"Técnico",origem:"Policial",dif:"Médio",difb:"fb-amber",ab:"#0A2E20",at:"#E1F5EE",pw:"barreiro2013",gp:"Hacking remoto, frágil em combate",
-  stats:{FOR:1,AGI:3,INT:5,PRE:2,VIG:2},pv:63,pe:50,san:52,desl:"9m",
-  defnote:"Defesa base 10. Esquiva com Reflexos (+10) como reacção.",
-  pericias:[["Tecnologia","+15"],["Investigação","+10"],["Furtividade","+10"],["Crime","+10"],["Reflexos","+10"],["Percepção","+5"]],
-  bg:"Mariana tem 34 anos e cresceu no Barreiro. Ex-analista da polícia judiciária, saiu após um processo nunca explicado. Hoje usa o mesmo talento para clientes diferentes.",
-  segredo:"Mariana reconheceu um dos organizadores — era o homem mencionado nos ficheiros que a fizeram sair da polícia.",
-  chatNat:"Precisamos do mapeamento completo dos compradores antes da meia-noite. Alguém lá dentro já tentou apagar os registos uma vez.",
-  chatEn:"We need the full buyer mapping before midnight. Someone inside has already tried erasing the records once.",
-  trilha_habs:[{n:"NEX 10% — Engenharia Reversa",d:"Desactiva/reprograma dispositivos com teste de Tecnologia."},{n:"NEX 40% — Acesso Remoto",d:"Gaste 2 PE: acede a sistemas a 100m sem contacto físico."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, releia o ficheiro que a fez sair da polícia (movimento) para restaurar 1 Ponto.",ns:[{n:"1 Ponto — Raiva Fria",c:"#D4AC0D",d:"Ignore pânico/medo 1 cena. +5 Tecnologia e Investigação."},{n:"2 Pontos — Não Esqueço Nada",c:"#C0392B",d:"Declare um culpado presente. Testes contra ele têm vantagem até ao fim do episódio."}]},
-  equip:[{n:"Laptop Modificado",d:"+2 Tecnologia. Bateria 12h."},{n:"Dispositivos de Escuta ×4",d:"Raio 20m, app encriptada."},{n:"Pistola Compacta",d:"Dano 1d6. Percepção DT16 p/ detectar."},{n:"Kit Arrombamento Electrónico",d:"Tecnologia DT14, sem rasto."},{n:"Pen USB com Malware",d:"Extrai ficheiros em 1 rodada."}]},
+{id:"mariana",initials:"ME",name:"Mariana Esteves",nac:"Portuguesa",idade:"34 anos",ocup:"Consultora de Cibersegurança",classe:"Especialista",trilha:"Técnico",origem:"Policial",dif:"Médio",difb:"fb-amber",ab:"#0A2E20",at:"#E1F5EE",pw:"barreiro2013",gameplay:"Hacking/infiltração técnica — trabalha em sistemas, fora de combate.",stats:{FOR:1,AGI:3,INT:5,PRE:2,VIG:2},pv:63,pe:50,san:52,desl:"9m",defnote:"Defesa base: 10. Esquiva disponível com Reflexos (+10) como reacção.",pericias:[["Tecnologia","+15"],["Investigação","+10"],["Furtividade","+10"],["Crime","+10"],["Reflexos","+10"],["Percepção","+5"]],bg:"Mariana tem 34 anos e cresceu no Barreiro. Entrou para a polícia judiciária com 22, especializou-se em crimes informáticos e chegou a analista sénior antes de tudo correr mal. O processo interno nunca foi explicado. Hoje usa o mesmo talento para clientes diferentes. É pragmática, directa, e tem zero tolerância para incompetência.",segredo:"Mariana reconheceu um dos organizadores — era o homem mencionado nos ficheiros que a fizeram sair da polícia.",chatNat:"Precisamos do mapeamento completo dos compradores antes da meia-noite. Os registos de transacções anteriores são prioridade — alguém lá dentro já tentou apagá-los uma vez.",chatEn:"We need the full buyer mapping before midnight. Previous transaction records are priority — someone inside has already tried erasing them once.",trilha_habs:[{n:"NEX 10% — Engenharia Reversa",d:"Pode tentar desactivar ou reprogramar qualquer dispositivo electrónico. Teste de Tecnologia (DT definido pelo Mestre)."},{n:"NEX 40% — Acesso Remoto",d:"Gaste 2 PE: acede a sistemas a distância de até 100m sem contacto físico, durante 1 cena."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, releia o ficheiro que a fez sair da polícia (acção de movimento) para restaurar 1 Ponto de Êxtase.",ns:[{n:"1 Ponto — Raiva Fria",c:"#D4AC0D",d:"Ignore pânico e medo durante 1 cena. +5 em Tecnologia e Investigação."},{n:"2 Pontos — Não Esqueço Nada",c:"#C0392B",d:"Declare o nome de um culpado presente. Todos os testes contra esse alvo têm vantagem automática até ao fim do episódio."}]},equip:[{n:"Laptop Modificado",d:"+2 em Tecnologia. Rastrear o IP: Tecnologia DT 22."},{n:"Dispositivos de Escuta ×4",d:"Microfone magnético tamanho moeda. Raio 20m."},{n:"Pistola Compacta",d:"Dano 1d6 balístico. Detectar em revista: Percepção DT 16."},{n:"Kit de Arrombamento Electrónico",d:"Fechaduras electrónicas: Tecnologia DT 14. Sem rasto."},{n:"Pen USB com Malware",d:"Extrai ficheiros em 1 rodada. Detectar: Tecnologia DT 18."}]},
 
-  {id:"idris",initials:"IO",name:"Idris Okonkwo",nac:"Nigeriano-Britânico",idade:"47 anos",ocup:"Professor / Arqueólogo",classe:"Ocultista",trilha:"Médium",origem:"Académico",dif:"Médio",difb:"fb-amber",ab:"#2E1A0A",at:"#FAECE7",pw:"congo1999",gp:"Informação paranormal, sem ataque",
-  stats:{FOR:1,AGI:2,INT:4,PRE:3,VIG:2},pv:50,pe:70,san:65,desl:"9m",
-  defnote:"Defesa base 10. Idris não usa armadura nem combate directo.",
-  pericias:[["Ocultismo","+15"],["Investigação","+10"],["Intuição","+10"],["Religião","+10"],["Atualidades","+5"],["Medicina","+5"]],
-  bg:"Idris tem 47 anos e duas carreiras paralelas: a académica, respeitada; e outra, que não consta no currículo. Passou dez anos a rastrear peças africanas saqueadas no período colonial.",
-  segredo:"Uma das peças foi retirada de uma aldeia durante um massacre em que o pai de Idris sobreviveu.",
-  chatNat:"We are aware of your personal connection to lot 14. Document everything — your restraint is as valuable as your expertise.",
-  chatEn:"We are aware of your personal connection to lot 14. Document everything — your restraint is as valuable as your expertise.",
-  trilha_habs:[{n:"NEX 10% — Sentir Presença",d:"Detecta entidades paranormais a 10m, sem teste."},{n:"NEX 40% — Canalizar",d:"Gaste 3 PE: comunica com um espírito morto no local há <24h."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, segure a fotografia da aldeia do seu pai (livre) para restaurar 1 Ponto.",ns:[{n:"1 Ponto — Luto como Bússola",c:"#D4AC0D",d:"Ao tocar objecto violento, revela a sua origem. +5 Ocultismo/Intuição na cena."},{n:"2 Pontos — Voz dos que Ficaram",c:"#C0392B",d:"Quem tocar o objecto fica Abalado 1d4 rodadas. Idris perde 1d6 Sanidade."}]},
-  equip:[{n:"Diário de Campo Encriptado",d:"47 artefactos rastreados. +2 Investigação."},{n:"Luvas de Látex ×6",d:"Reduzem perda Sanidade do poder em 1."},{n:"Câmara de Alta Resolução",d:"+2 Investigação em marcações."},{n:"Bastão Ritual",d:"Dano 1d6+FOR. +1d4 vs entidades."},{n:"Sal Consagrado ×5",d:"Perímetro: entidades NEX inferior não cruzam."}]},
+{id:"idris",initials:"IO",name:"Idris Okonkwo",nac:"Nigeriano-Britânico",idade:"47 anos",ocup:"Professor / Arqueólogo",classe:"Ocultista",trilha:"Médium",origem:"Académico",dif:"Médio",difb:"fb-amber",ab:"#2E1A0A",at:"#FAECE7",pw:"congo1999",gameplay:"Ocultista de informação — lê objectos e espíritos, não ataca.",stats:{FOR:1,AGI:2,INT:4,PRE:3,VIG:2},pv:50,pe:70,san:65,desl:"9m",defnote:"Defesa base: 10. Menor PV mas maior PE e SAN. Não usa armadura.",pericias:[["Ocultismo","+15"],["Investigação","+10"],["Intuição","+10"],["Religião","+10"],["Atualidades","+5"],["Medicina","+5"]],bg:"Idris tem 47 anos e duas carreiras paralelas: a académica, respeitada e publicada; e outra, que não consta no currículo. Passou dez anos a rastrear peças africanas saqueadas durante o período colonial. O leilão tem pelo menos três peças que ele rastreou até cemitérios de guerra no Congo.",segredo:"Uma das peças no catálogo foi retirada de uma aldeia durante um massacre em que o pai de Idris sobreviveu.",chatNat:"We are aware of your personal connection to lot 14. It will not be removed from your assignment. Document everything — your expertise here is irreplaceable, and so is your restraint.",chatEn:"We are aware of your personal connection to lot 14. It will not be removed from your assignment. Document everything — your expertise here is irreplaceable, and so is your restraint.",trilha_habs:[{n:"NEX 10% — Sentir Presença",d:"Detecta automaticamente entidades paranormais num raio de 10m, sem teste."},{n:"NEX 40% — Canalizar",d:"Gaste 3 PE: comunica com o espírito de alguém que morreu neste local nas últimas 24h. O Mestre responde a 1 pergunta verdadeiramente."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, segure a fotografia da aldeia do seu pai (acção livre) para restaurar 1 Ponto de Êxtase.",ns:[{n:"1 Ponto — Luto como Bússola",c:"#D4AC0D",d:"Ao tocar um objecto com história violenta, o Mestre revela uma verdade sobre a sua origem. +5 em Ocultismo e Intuição."},{n:"2 Pontos — Voz dos que Ficaram",c:"#C0392B",d:"Um objecto presente: qualquer personagem que o toque fica Abalado 1d4 rodadas. Idris perde 1d6 Sanidade."}]},equip:[{n:"Diário de Campo Encriptado",d:"+2 em Ocultismo para identificar peças previamente catalogadas."},{n:"Luvas de Látex ×6",d:"Protegem de artefactos activos. Reduzem perda de Sanidade em 1."},{n:"Câmara de Alta Resolução",d:"+2 em Investigação para identificar marcações em artefactos."},{n:"Bastão Ritual",d:"Dano 1d6+FOR. Contra entidades: +1d4 dano extra."},{n:"Sal Consagrado ×5",d:"Perímetro de protecção: entidades com NEX inferior não cruzam. 1 cena."}]},
 
-  {id:"sofia",initials:"SA",name:"Sofia Andrade",nac:"Portuguesa-Brasileira",idade:"29 anos",ocup:"Jornalista / Operativa",classe:"Especialista",trilha:"Infiltrado",origem:"Artista",dif:"Fácil",difb:"fb-green",ab:"#2E0A1A",at:"#FBEAF0",pw:"passaporte3x",gp:"Disfarce e manipulação social",
-  stats:{FOR:1,AGI:3,INT:2,PRE:5,VIG:1},pv:53,pe:80,san:52,desl:"9m",
-  defnote:"Defesa base 10. Sofia evita combate por completo.",
-  pericias:[["Enganação","+15"],["Diplomacia","+15"],["Furtividade","+10"],["Intuição","+10"],["Artes","+5"],["Intimidação","+5"]],
-  bg:"Sofia tem 29 anos e cresceu entre o Porto e São Paulo. Sabe ser exactamente o que cada pessoa precisa que ela seja. O seu dossiê real nunca foi confirmado por nenhuma agência.",
-  segredo:"Sofia foi enviada com uma missão secundária que a equipa desconhece.",
-  chatNat:"A tua segunda tarefa mantém-se confidencial — nem a equipa pode saber. Confiamos no teu discernimento, como sempre.",
-  chatEn:"Your second task stays confidential — not even the team can know. We trust your judgement, as always.",
-  trilha_habs:[{n:"NEX 10% — Disfarce Rápido",d:"Cria disfarce em 1 minuto. +2 Enganação."},{n:"NEX 40% — Identidade Perfeita",d:"Gaste 3 PE: identidade falsa irrastreável (Investigação DT30)."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, olhe-se ao espelho 1 minuto (padrão) para restaurar 2 Pontos.",ns:[{n:"1 Ponto — Desejo Espelhado",c:"#D4AC0D",d:"Alvo não pode atacar primeiro 1 cena. +5 Enganação contra ele."},{n:"2 Pontos — Sou o que Precisas",c:"#C0392B",d:"Alvo confia totalmente, partilha informação. Sofia perde 1 Sanidade."}]},
-  equip:[{n:"3 Passaportes Limpos",d:"Detectar falsidade: Investigação DT22."},{n:"Kit de Maquilhagem Profissional",d:"+3 Enganação em disfarces."},{n:"Gravador de Bolso",d:"Capta a 8m."},{n:"Faca de Esconder",d:"Dano 1d4+AGI. Percepção DT20."},{n:"Credenciais de Imprensa Falsas",d:"Autentica em portais padrão."}]},
+{id:"sofia",initials:"SA",name:"Sofia Andrade",nac:"Portuguesa-Brasileira",idade:"29 anos",ocup:"Jornalista / Operativa",classe:"Especialista",trilha:"Infiltrado",origem:"Artista",dif:"Fácil",difb:"fb-green",ab:"#2E0A1A",at:"#FBEAF0",pw:"passaporte3x",gameplay:"Infiltração social — disfarces, identidades falsas, manipulação 1-para-1.",stats:{FOR:1,AGI:3,INT:2,PRE:5,VIG:1},pv:53,pe:80,san:52,desl:"9m",defnote:"Defesa base: 10. Evita combate. Esquiva disponível com Reflexos como reacção.",pericias:[["Enganação","+15"],["Diplomacia","+15"],["Furtividade","+10"],["Intuição","+10"],["Artes","+5"],["Intimidação","+5"]],bg:"Sofia tem 29 anos e cresceu entre o Porto e São Paulo. Sabe ser exactamente o que cada pessoa precisa que ela seja. O seu dossiê real está algures nos servidores de uma agência europeia que nunca confirmou a sua existência. Gosta genuinamente de arte, o que a torna mais convincente.",segredo:"Sofia foi enviada com uma missão secundária que a restante equipa desconhece — e que pode colocá-los em risco.",chatNat:"Lembra-te: a tua aproximação ao anfitrião é só metade do trabalho. A segunda tarefa mantém-se confidencial — nem a equipa pode saber. Confiamos no teu discernimento, como sempre.",chatEn:"Remember: your approach to the host is only half the job. The second task stays confidential — not even the team can know. We trust your judgement, as always.",trilha_habs:[{n:"NEX 10% — Disfarce Rápido",d:"Cria um disfarce convincente em 1 minuto em vez de 10. +2 em Enganação para manter a identidade falsa."},{n:"NEX 40% — Identidade Perfeita",d:"Gaste 3 PE: durante 1 cena, a sua identidade falsa é irrastreável mesmo com Investigação DT 30."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, olhe para um espelho durante 1 minuto sem desviar o olhar (acção padrão) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — Desejo Espelhado",c:"#D4AC0D",d:"Alvo em visão não pode iniciar acções hostis contra si durante 1 cena. +5 em Enganação contra esse alvo."},{n:"2 Pontos — Sou o que Precisas",c:"#C0392B",d:"O alvo trata Sofia como a pessoa de máxima confiança, partilhando informação voluntariamente. Perde 1 Sanidade."}]},equip:[{n:"3 Passaportes (identidades limpas)",d:"Portuguesa, Brasileira, Francesa. Detectar falsidade: Investigação DT 22."},{n:"Kit de Maquilhagem Profissional",d:"+3 em Enganação para disfarces físicos. Inclui lentes e perucas."},{n:"Gravador de Bolso",d:"Capta conversa a até 8m. Tamanho de uma pastilha elástica."},{n:"Faca de Esconder",d:"Dano 1d4+AGI. Detectar em revista: Percepção DT 20."},{n:"Credenciais de Imprensa (falsas)",d:"Acreditação válida para o evento. Autentica em portais padrão."}]},
 
-  {id:"tomas",initials:"TK",name:"Tomas Kern",nac:"Austríaco",idade:"55 anos",ocup:"Médico Forense / Toxicologista",classe:"Especialista",trilha:"Médico de Campo",origem:"Médico",dif:"Difícil",difb:"fb-red",ab:"#1A1A18",at:"#F1EFE8",pw:"viena1968",gp:"Suporte médico e veneno",
-  stats:{FOR:2,AGI:2,INT:4,PRE:2,VIG:3},pv:73,pe:50,san:52,desl:"9m",
-  defnote:"Defesa base 10. Tomas não combate — a sua arma é o conhecimento médico.",
-  pericias:[["Medicina","+15"],["Ciências","+15"],["Investigação","+10"],["Fortitude","+10"],["Enganação","+5"],["Crime","+5"]],
-  bg:"Tomas tem 55 anos e reputação impecável em Viena. Consultou Interpol e OMS. O que nenhum colega sabe é que parte do seu conhecimento sobre venenos é prático.",
-  segredo:"Tomas está a ser chantageado — não com ameaças, mas com uma pergunta.",
-  chatNat:"Falls etwas schiefgeht, sind Sie die letzte Verteidigungslinie. Diskretion hat Vorrang vor allem.",
-  chatEn:"If something goes wrong, you're the team's last line of defence. Discretion takes priority over everything else.",
-  trilha_habs:[{n:"NEX 10% — Estabilização de Emergência",d:"Estabiliza aliado a 0 PV sem teste, só com movimento."},{n:"NEX 40% — Diagnóstico Rápido",d:"Gaste 2 PE: identifica veneno/doença instantaneamente."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, trate um aliado sem anestesia (padrão) para restaurar 2 Pontos.",ns:[{n:"1 Ponto — Mãos que Salvam",c:"#D4AC0D",d:"Estabiliza sem teste, recupera 1d6+INT PV. +5 Medicina na cena."},{n:"2 Pontos — A Vergonha que Sustenta",c:"#C0392B",d:"Aliado Morrendo recupera metade PV e levanta-se. Tomas perde 1d4 Sanidade."}]},
-  equip:[{n:"Maleta Médica Completa",d:"Medicina DT18 sem penalidade. 4 usos avançados."},{n:"Veneno Não Detectável ×3",d:"Sintomas em 2h. Medicina DT22 p/ autópsia."},{n:"Seringa de Sedação ×4",d:"Toque: Fortitude DT15 ou Inconsciente 1d4h."},{n:"Pistola com Tranquilizante",d:"Fortitude DT13 em vez de dano."},{n:"Gravador de Conferências",d:"+2 Investigação posterior."}]},
+{id:"tomas",initials:"TK",name:"Tomas Kern",nac:"Austríaco",idade:"55 anos",ocup:"Médico Forense / Toxicologista",classe:"Especialista",trilha:"Médico de Campo",origem:"Médico",dif:"Difícil",difb:"fb-red",ab:"#1A1A18",at:"#F1EFE8",pw:"viena1968",gameplay:"Suporte médico e eliminação química — cura, estabiliza, sedação.",stats:{FOR:2,AGI:2,INT:4,PRE:2,VIG:3},pv:73,pe:50,san:52,desl:"9m",defnote:"Defesa base: 10. Sem armadura em contexto formal. Fortitude (+10) como reacção.",pericias:[["Medicina","+15"],["Ciências","+15"],["Investigação","+10"],["Fortitude","+10"],["Enganação","+5"],["Crime","+5"]],bg:"Tomas tem 55 anos e uma reputação impecável em Viena. Consultou para Interpol e OMS. Os seus artigos sobre envenenamento histórico são referência na área. O que nenhum colega sabe é que parte do seu conhecimento é prático. Em algum momento passou de observador a participante.",segredo:"Tomas está a ser chantageado. Não com ameaças — com uma pergunta que ele não quer que seja respondida publicamente.",chatNat:"Falls etwas schiefgeht, sind Sie die letzte Verteidigungslinie des Teams. Diskretion hat Vorrang vor allem anderen — auch vor dem Erfolg der Mission, wenn nötig.",chatEn:"If something goes wrong, you're the team's last line of defence. Discretion takes priority over everything else — even the mission's success, if necessary.",trilha_habs:[{n:"NEX 10% — Estabilização de Emergência",d:"Pode estabilizar um aliado com 0 PV sem teste de Medicina, usando apenas uma acção de movimento."},{n:"NEX 40% — Diagnóstico Rápido",d:"Gaste 2 PE: identifica instantaneamente veneno, doença ou condição paranormal. O Mestre revela a causa exacta."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, trate ferimentos de um aliado sem anestesia (acção padrão) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — Mãos que Salvam",c:"#D4AC0D",d:"Estabilize aliado com 0 PV sem teste. Recupera 1d6+INT PV. +5 em Medicina durante a cena."},{n:"2 Pontos — A Vergonha que Sustenta",c:"#C0392B",d:"Aliado Morrendo recupera metade dos PV máximos e levanta-se. Tomas perde 1d4 Sanidade."}]},equip:[{n:"Maleta Médica Completa",d:"Medicina DT até 18 sem penalidade. 4 usos de estabilização avançada."},{n:"Veneno Não Detectável ×3",d:"Sintomas 2h após ingestão. Incapacitado 1d6h. Detectar em autópsia: Medicina DT 22."},{n:"Seringa de Sedação ×4",d:"Ataque de toque: Fortitude DT 15 ou Inconsciente 1d4h."},{n:"Pistola Compacta Modificada",d:"Dano 1d6. Munições de tranquilizante (Fortitude DT 13 ou Sedação)."},{n:"Gravador de Conferências",d:"+2 em Investigação para análise posterior."}]},
 
-  {id:"amara",initials:"AD",name:"Amara Diallo",nac:"Senegalesa-Francesa",idade:"33 anos",ocup:"Assessora de Segurança Privada",classe:"Combatente",trilha:"Agente Secreto",origem:"Espia",dif:"Médio",difb:"fb-amber",ab:"#2A0A2A",at:"#F7EAF7",pw:"marseille2019",gp:"Furtividade e eliminação silenciosa",
-  stats:{FOR:2,AGI:5,INT:2,PRE:3,VIG:2},pv:76,pe:50,san:39,desl:"12m",
-  defnote:"Defesa base 10. Colete oculto +3. Esquiva com Reflexos (+10) como reacção.",
-  pericias:[["Furtividade","+15"],["Reflexos","+10"],["Luta","+10"],["Enganação","+10"],["Intuição","+10"],["Percepção","+5"]],
-  bg:"Amara tem 33 anos e cresceu entre Dakar e Lyon. Ex-DGSI, demitida após a morte de um informador que ela própria recrutou. Nunca contestou a versão oficial.",
-  segredo:"O informador morto era irmão de um dos organizadores do evento.",
-  chatNat:"On a confirmé au moins deux éléments de sécurité non répertoriés. Neutralise toute menace silencieusement.",
-  chatEn:"We've confirmed at least two unlisted security elements. Neutralise any threat silently — no trace.",
-  trilha_habs:[{n:"NEX 10% — A Favorita",d:"Arma favorita reduz categoria em 1."},{n:"NEX 40% — Técnica Secreta",d:"Reduz em II. Gaste 2 PE para efeitos especiais."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, recite o nome do informador morto (livre) para restaurar 1 Ponto.",ns:[{n:"1 Ponto — Sombra de Marselha",c:"#D4AC0D",d:"Indetectável 1 cena. +4 Furtividade e Reflexos."},{n:"2 Pontos — Dívida de Sangue",c:"#C0392B",d:"Ataques contra alvo declarado têm vantagem e +1d8. Perde 1d4 Sanidade."}]},
-  equip:[{n:"HK USP Compact",d:"Dano 1d8. Versão cerâmica evita detectores."},{n:"Fio de Estrangulamento",d:"Dano 1d6+AGI/rodada. Silencioso."},{n:"Dispositivo de Scrambling ×3",d:"Perturba câmaras 10m, 1d4+1 rodadas."},{n:"Identidade DGSI Inactiva",d:"Funciona em 60% dos sistemas europeus."},{n:"Colete Táctico Oculto",d:"Protecção 3, indetectável."}]},
+{id:"amara",initials:"AD",name:"Amara Diallo",nac:"Senegalesa-Francesa",idade:"33 anos",ocup:"Assessora de Segurança Privada",classe:"Combatente",trilha:"Agente Secreto",origem:"Espia",dif:"Médio",difb:"fb-amber",ab:"#2A0A2A",at:"#F7EAF7",pw:"marseille2019",gameplay:"Combate furtivo — assassinato silencioso, evita confronto directo.",stats:{FOR:2,AGI:5,INT:2,PRE:3,VIG:2},pv:76,pe:50,san:39,desl:"12m",defnote:"Defesa base: 10. Colete oculto: Protecção 3. Esquiva com Reflexos (+10) como reacção.",pericias:[["Furtividade","+15"],["Reflexos","+10"],["Luta","+10"],["Enganação","+10"],["Intuição","+10"],["Percepção","+5"]],bg:"Amara tem 33 anos e cresceu entre Dakar e Lyon. Ex-agente da DGSI, demitida após um incidente em Marselha que os registos oficiais descrevem como equívoco operacional. O incidente envolveu a morte de um informador que ela própria recrutara. Nunca contestou a versão oficial.",segredo:"Amara reconhece o leilão como ligado ao incidente de Marselha. O informador morto era o irmão do organizador.",chatNat:"On a confirmé la présence d'au moins deux éléments de sécurité non répertoriés. Neutralise toute menace silencieusement — aucune trace, aucun bruit. Tu sais comment procéder.",chatEn:"We've confirmed at least two unlisted security elements on site. Neutralise any threat silently — no trace, no noise. You know how this works.",trilha_habs:[{n:"NEX 10% — A Favorita",d:"Escolha uma arma favorita. A categoria da arma escolhida é reduzida em 1."},{n:"NEX 40% — Técnica Secreta",d:"A arma favorita é reduzida em II. Pode gastar 2 PE para executar efeitos especiais (Amplo, Destruidor) ao atacar."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, recite o nome do informador morto três vezes em voz baixa (acção livre) para restaurar 1 Ponto de Êxtase.",ns:[{n:"1 Ponto — Sombra de Marselha",c:"#D4AC0D",d:"Durante 1 cena, qualquer teste para detectar a sua presença falha automaticamente. +4 em Furtividade e Reflexos."},{n:"2 Pontos — Dívida de Sangue",c:"#C0392B",d:"Declare um alvo como responsável por uma perda pessoal. Todos os ataques e testes têm vantagem e causam +1d8. Perde 1d4 Sanidade."}]},equip:[{n:"HK USP Compact",d:"Dano 1d8 balístico. Não activa detectores padrão em versão cerâmica. 12 munições."},{n:"Fio de Estrangulamento",d:"Requer agarrar primeiro. Dano 1d6+AGI por rodada. Silencioso."},{n:"Dispositivo de Scrambling ×3",d:"Perturba câmeras num raio de 10m durante 1d4+1 rodadas."},{n:"Identidade DGSI Inactiva",d:"Funcionam em 60% dos sistemas europeus. Detectar suspensão: Investigação DT 20."},{n:"Colete Táctico Oculto",d:"Protecção 3. Indistinguível de roupa interior: Percepção DT 18."}]},
 
-  {id:"ezra",initials:"EB",name:"Ezra Blackwell",nac:"Americano",idade:"38 anos",ocup:"Caçador de Recompensas",classe:"Combatente",trilha:"Caçador",origem:"Policial",dif:"Fácil",difb:"fb-green",ab:"#1E120A",at:"#F5EFE8",pw:"marshal2011",gp:"Atirador, foco num alvo único",
-  stats:{FOR:3,AGI:3,INT:2,PRE:2,VIG:4},pv:96,pe:40,san:39,desl:"12m",
-  defnote:"Defesa base 10. Bloqueio com Fortitude (+10) como reacção vs CaC.",
-  pericias:[["Pontaria","+15"],["Percepção","+10"],["Atletismo","+10"],["Sobrevivência","+10"],["Investigação","+10"],["Intimidação","+5"]],
-  bg:"Ezra tem 38 anos, ex-U.S. Marshal especializado em extradições de alto risco. Saiu ao recusar entregar um fugitivo a uma jurisdição corrupta.",
-  segredo:"Ezra não está nesta missão pelo dinheiro — o alvo sabe onde está o homem que destruiu a sua carreira.",
-  chatNat:"We need him alive, Blackwell. Whatever personal business you've got waits until after extraction.",
-  chatEn:"We need him alive, Blackwell. Whatever personal business you've got waits until after extraction.",
-  trilha_habs:[{n:"NEX 10% — Marcar Alvo",d:"Alvo por cena: +2 ataques, localização conhecida mesmo fora de visão."},{n:"NEX 40% — Tiro de Precisão",d:"Gaste 2 PE: ataque ignora cobertura e distância."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, estude o perfil do alvo 1 minuto (padrão) para restaurar 2 Pontos.",ns:[{n:"1 Ponto — Sempre Foge para o Mesmo Sítio",c:"#D4AC0D",d:"Localização exacta do alvo sempre conhecida. +4 Pontaria contra ele."},{n:"2 Pontos — A Caça Acabou",c:"#C0392B",d:"Imobiliza sem teste — Incapacitado 1d4 rodadas. Se morrer, perde 1d6 Sanidade."}]},
-  equip:[{n:"Rifle de Precisão Desmontável",d:"Dano 2d8, alcance 200m. Cabe numa mala."},{n:"Algemas Táticas ×3",d:"Atletismo/Luta DT18 p/ soltar."},{n:"Pistola Backup Glock 26",d:"Dano 1d6, coldre de tornozelo."},{n:"Binóculos Visão Nocturna",d:"+3 Percepção, alcance 500m."},{n:"Mandado Activo (EUA)",d:"Sem validade legal em Portugal — mas impressiona."}]},
+{id:"ezra",initials:"EB",name:"Ezra Blackwell",nac:"Americano",idade:"38 anos",ocup:"Caçador de Recompensas",classe:"Combatente",trilha:"Caçador",origem:"Policial",dif:"Fácil",difb:"fb-green",ab:"#1E120A",at:"#F5EFE8",pw:"marshal2011",gameplay:"Combate à distância — marca e abate um único alvo com precisão.",stats:{FOR:3,AGI:3,INT:2,PRE:2,VIG:4},pv:96,pe:40,san:39,desl:"12m",defnote:"Defesa base: 10. Sem armadura em contexto formal. Bloqueio com Fortitude (+10) vs CaC.",pericias:[["Pontaria","+15"],["Percepção","+10"],["Atletismo","+10"],["Sobrevivência","+10"],["Investigação","+10"],["Intimidação","+5"]],bg:"Ezra tem 38 anos e passou doze como U.S. Marshal, especializando-se em extradições de alto risco. Saiu voluntariamente depois de se recusar a entregar um fugitivo a uma jurisdição corrupta. Está em Lisboa porque um dos lotes estava ligado a uma missão que nunca terminou.",segredo:"Ezra não está na missão pelo dinheiro. O alvo que quer capturar sabe onde está o homem que destruiu a sua carreira.",chatNat:"We need him alive, Blackwell. Whatever personal business you've got with this guy waits until after extraction — the organisation needs what's in his head intact.",chatEn:"We need him alive, Blackwell. Whatever personal business you've got with this guy waits until after extraction — the organisation needs what's in his head intact.",trilha_habs:[{n:"NEX 10% — Marcar Alvo",d:"Designa um alvo por cena. Todos os ataques têm +2 e Ezra sabe a sua localização aproximada mesmo fora de visão."},{n:"NEX 40% — Tiro de Precisão",d:"Gaste 2 PE: o próximo ataque de Pontaria ignora cobertura e penalidades de distância."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, estude o perfil do seu alvo durante 1 minuto (acção padrão) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — Sempre Foge para o Mesmo Sítio",c:"#D4AC0D",d:"Conhece a localização exacta do alvo designado em qualquer momento da cena, mesmo escondido. +4 em Pontaria contra esse alvo."},{n:"2 Pontos — A Caça Acabou",c:"#C0392B",d:"Imobiliza um alvo sem teste — Incapacitado 1d4 rodadas. Não pode atacar outros durante esse tempo. Se o alvo morrer, perde 1d6 Sanidade."}]},equip:[{n:"Rifle de Precisão (desmontável)",d:"Dano 2d8 balístico. Alcance longo (200m). Cabe numa mala."},{n:"Algemas Táticas ×3",d:"Alvo imobilizado até Atletismo ou Luta DT 18."},{n:"Pistola de Backup Glock 26",d:"Dano 1d6 balístico. Oculta em coldre de tornozelo."},{n:"Binóculos com Visão Nocturna",d:"+3 em Percepção à distância ou em pouca luz. Alcance 500m."},{n:"Mandado Activo (EUA)",d:"Sem validade legal em Portugal — mas impressiona."}]},
 
-  {id:"valentina",initials:"VC",name:"Valentina Cruz",nac:"Mexicana",idade:"44 anos",ocup:"Antropóloga / Consultora Cultural",classe:"Ocultista",trilha:"Exorcista",origem:"Académico",dif:"Médio",difb:"fb-amber",ab:"#0A2E20",at:"#E8F7F4",pw:"nahuatl1998",gp:"Controlo de área contra paranormal",
-  stats:{FOR:1,AGI:2,INT:3,PRE:4,VIG:2},pv:50,pe:80,san:65,desl:"9m",
-  defnote:"Defesa base 10. Protecção via conhecimento ritual, não armadura.",
-  pericias:[["Ocultismo","+15"],["Religião","+15"],["Intuição","+10"],["Investigação","+10"],["Vontade","+5"],["Medicina","+5"]],
-  bg:"Valentina tem 44 anos e carreira académica na UNAM, interrompida duas vezes por convites do Vaticano que envolviam objectos confiscados e subsequentemente destruídos.",
-  segredo:"Valentina já exorcizou um objecto idêntico a um dos lotes. Sabe o que aconteceu a quem o comprou.",
-  chatNat:"Sabemos que ya has visto algo idéntico antes. Si tienes que intervenir activamente, hazlo — autorizamos lo necesario.",
-  chatEn:"We know you've seen something identical before. If active intervention is needed, do it — you're authorised.",
-  trilha_habs:[{n:"NEX 10% — Nome Verdadeiro",d:"Entidade identificada fica Abalada 1d4 rodadas sem teste."},{n:"NEX 40% — Barreira Sagrada",d:"Gaste 4 PE: perímetro de 6m bloqueia entidades 1 cena."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, reze em náhuatl diante de objecto paranormal (padrão) para restaurar 2 Pontos.",ns:[{n:"1 Ponto — O Nome que Expulsa",c:"#D4AC0D",d:"Entidade impossibilitada de agir 1d4 rodadas. +5 Ocultismo/Religião."},{n:"2 Pontos — Fardo que Carrego",c:"#C0392B",d:"Absorve influência paranormal — aliados livres de medo. Valentina Abalada, perde 1d6 Sanidade."}]},
-  equip:[{n:"Grimório Pessoal Encriptado",d:"12 rituais. +2 Ocultismo em identificação."},{n:"Relíquia Consagrada",d:"Dano 1d4, +1d8 vs entidades. +1 SAN máxima."},{n:"Sal Bento e Ervas Rituais ×6",d:"Protecção ou purificação de artefactos."},{n:"Câmara de Espectro Infravermelho",d:"+3 Ocultismo em manifestações invisíveis."},{n:"Credenciais do Vaticano (nível 2)",d:"+3 Investigação em artefactos religiosos."}]},
+{id:"valentina",initials:"VC",name:"Valentina Cruz",nac:"Mexicana",idade:"44 anos",ocup:"Antropóloga / Consultora Cultural",classe:"Ocultista",trilha:"Exorcista",origem:"Académico",dif:"Médio",difb:"fb-amber",ab:"#0A2E20",at:"#E8F7F4",pw:"nahuatl1998",gameplay:"Ocultista ofensivo — dano e controlo directo contra entidades paranormais.",stats:{FOR:1,AGI:2,INT:3,PRE:4,VIG:2},pv:50,pe:80,san:65,desl:"9m",defnote:"Defesa base: 10. Sem armadura. Protecção via Barreira Sagrada e conhecimento ritual.",pericias:[["Ocultismo","+15"],["Religião","+15"],["Intuição","+10"],["Investigação","+10"],["Vontade","+5"],["Medicina","+5"]],bg:"Valentina tem 44 anos e uma carreira académica sólida na UNAM, interrompida duas vezes por convites que não podia recusar nem explicar. As consultas ao Vaticano envolveram objectos confiscados a coleccionadores privados — descritos nos seus relatórios como activos e subsequentemente destruídos.",segredo:"Valentina já exorcizou um objecto idêntico a um dos lotes. Sabe exactamente o que aconteceu à pessoa que o comprou.",chatNat:"Sabemos que ya has visto algo idéntico antes. No lo evites: identifica el peligro real entre las piezas. Si tienes que intervenir activamente, hazlo — autorizamos lo necesario.",chatEn:"We know you've seen something identical before. Don't avoid it: identify the real danger among the pieces. If active intervention is needed, do it — you're authorised.",trilha_habs:[{n:"NEX 10% — Nome Verdadeiro",d:"Ao identificar uma entidade, pode enunciar o seu nome verdadeiro. A entidade fica Abalada durante 1d4 rodadas sem direito a teste."},{n:"NEX 40% — Barreira Sagrada",d:"Gaste 4 PE: cria um perímetro de 6m que entidades paranormais não podem cruzar durante 1 cena."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, recite uma oração em náhuatl clássico diante de um objecto paranormal (acção padrão) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — O Nome que Expulsa",c:"#D4AC0D",d:"Declare o nome de uma entidade. Fica impossibilitada de agir 1d4 rodadas. +5 em Ocultismo e Religião."},{n:"2 Pontos — Fardo que Carrego",c:"#C0392B",d:"Absorve influência paranormal de um objecto. Todos os aliados ficam livres de medo ou possessão. Valentina fica Abalada 1 cena e perde 1d6 Sanidade."}]},equip:[{n:"Grimório Pessoal Encriptado",d:"+2 em Ocultismo para identificar entidades ou artefactos catalogados."},{n:"Relíquia Consagrada (cruz de obsidiana)",d:"Dano 1d4. Contra entidades: +1d8 extra. +1 SAN máxima enquanto equipada."},{n:"Sal Bento e Ervas Rituais ×6",d:"Círculo de protecção ou purificação de artefactos em 1 cena."},{n:"Câmara de Espectro Infravermelho",d:"+3 em Ocultismo para identificar entidades ocultas."},{n:"Credenciais do Vaticano (nível 2)",d:"+3 em Investigação para artefactos com história religiosa."}]},
 
-  {id:"nikolaj",initials:"NV",name:"Nikolaj Voss",nac:"Dinamarquês",idade:"29 anos",ocup:"Sem Ocupação Declarada",classe:"Ocultista",trilha:"Possuído",origem:"Amnésico",dif:"Difícil",difb:"fb-red",ab:"#0A1A2E",at:"#EBF0FA",pw:"copenhaga2021",gp:"Risco/recompensa extremo, fusão com entidade",
-  stats:{FOR:2,AGI:2,INT:3,PRE:2,VIG:3},pv:60,pe:60,san:65,desl:"9m",
-  defnote:"Defesa base 10. Aumenta drasticamente quando a entidade assume controlo parcial/total.",
-  pericias:[["Ocultismo","+15"],["Vontade","+10"],["Percepção","+10"],["Intuição","+10"],["Luta","+5"],["Fortitude","+5"]],
-  bg:"Nikolaj acordou num hospital em Copenhaga sem memória de cinco anos. Quando os episódios acontecem, não está sozinho no seu próprio corpo.",
-  segredo:"A entidade dentro de Nikolaj esteve ligada a um dos artefactos durante décadas.",
-  chatNat:"Vi ved, hvad der er i kataloget. Du blev ikke sendt ved et tilfælde — fortæl os, hvad du mærker.",
-  chatEn:"We know what's in the catalogue. You weren't sent by accident — tell us what you sense.",
-  trilha_habs:[{n:"NEX 10% — Visão Partilhada",d:"+3 Percepção/Intuição. Detecta paranormal a 15m."},{n:"NEX 40% — Controlo Cedido",d:"Gaste 3 PE: entidade actua 1 rodada com FOR/AGI 5, imune a medo."}],
-  poder:{h:"3/3 Pontos de Êxtase",req:"Uma vez por cena de descanso, deixe a entidade falar 1 minuto (padrão) para restaurar 2 Pontos. Perde 1 Sanidade.",ns:[{n:"1 Ponto — Ele Também Vê",c:"#D4AC0D",d:"Vê através de paredes 1 cena. +4 Percepção/Intuição."},{n:"2 Pontos — Deixa-me Passar",c:"#C0392B",d:"+3 FOR/VIG, ataques +1d6, imune a Medo. Depois: Vontade DT15 ou perde turno."},{n:"3 Pontos — Somos Um",c:"#8E44AD",d:"Fusão total 1 rodada: FOR/AGI 5, imune a dano não-paranormal. Depois: Inconsciente, perde 1d8 Sanidade."}]},
-  equip:[{n:"Diário de Episódios",d:"+2 Ocultismo em entidades ligadas ao seu passado."},{n:"Faca Ritual",d:"Dano 1d4+FOR, sobe em fusão parcial."},{n:"Supressores de Dissociação ×4",d:"Adiam possessão mas bloqueiam o poder."},{n:"Amuleto de Contenção",d:"Reduz perda de Sanidade em 1d4."},{n:"Telemóvel sem SIM",d:"Fotos não identificadas — pistas futuras."}]},
+{id:"nikolaj",initials:"NV",name:"Nikolaj Voss",nac:"Dinamarquês",idade:"29 anos",ocup:"Sem Ocupação Declarada",classe:"Ocultista",trilha:"Possuído",origem:"Amnésico",dif:"Difícil",difb:"fb-red",ab:"#0A1A2E",at:"#EBF0FA",pw:"copenhaga2021",gameplay:"Risco/recompensa — poder explosivo, custo pessoal alto, lógica imprevisível.",stats:{FOR:2,AGI:2,INT:3,PRE:2,VIG:3},pv:60,pe:60,san:65,desl:"9m",defnote:"Defesa base: 10. Com entidade activa (2-3 pontos), Defesa efectiva aumenta — critério do Mestre.",pericias:[["Ocultismo","+15"],["Vontade","+10"],["Percepção","+10"],["Intuição","+10"],["Luta","+5"],["Fortitude","+5"]],bg:"Nikolaj acordou num hospital em Copenhaga sem memória de cinco anos da sua vida. O que sabe, e não disse a nenhum médico, é que quando os episódios acontecem não está sozinho no seu próprio corpo. Chegou a Lisboa seguindo uma sensação que não consegue descrever como outra coisa senão fome.",segredo:"A entidade dentro de Nikolaj esteve ligada a um dos artefactos do leilão durante décadas. Se os dois se reunirem, as consequências são imprevisíveis — e Nikolaj sabe disso.",chatNat:"Vi ved, hvad der er i kataloget. Vi ved også, hvad det betyder for dig. Du blev ikke sendt ved et tilfælde — hold dig tæt på, og fortæl os, hvad du mærker.",chatEn:"We know what's in the catalogue. We also know what it means to you. You weren't sent by accident — stay close to it, and tell us what you sense.",trilha_habs:[{n:"NEX 10% — Visão Partilhada",d:"+3 em Percepção e Intuição passivos. Detecta presença paranormal automaticamente a 15m."},{n:"NEX 40% — Controlo Cedido",d:"Gaste 3 PE: a entidade actua por 1 rodada — iniciativa 20, FOR e AGI 5, imune a medo."}],poder:{h:"3/3 Pontos de Êxtase",req:"Uma vez por cena de descanso, deixe a entidade falar livremente 1 minuto sem resistir (acção padrão) para restaurar 2 Pontos de Êxtase. Perde 1 Sanidade ao fazê-lo.",ns:[{n:"1 Ponto — Ele Também Vê",c:"#D4AC0D",d:"Vê através de paredes e escuridão 1 cena. Detecta presenças paranormais automaticamente. +4 em Percepção e Intuição."},{n:"2 Pontos — Deixa-me Passar",c:"#C0392B",d:"Entidade toma controlo parcial. +3 FOR e VIG. Ataques causam +1d6. Imune a Medo. No fim: Vontade DT 15 ou entidade age por conta própria 1 turno."},{n:"3 Pontos — Somos Um",c:"#8E44AD",d:"Fusão total 1 rodada. FOR e AGI tornam-se 5. Imune a dano não-paranormal. Após: Inconsciente 1d4 rodadas, perde 1d8 Sanidade."}]},equip:[{n:"Diário de Episódios",d:"+2 em Ocultismo para identificar entidades com ligação ao passado de Nikolaj."},{n:"Faca Ritual",d:"Dano 1d4+FOR. Em fusão parcial: 1d6+FOR e causa medo em entidades menores."},{n:"Supressores de Dissociação ×4",d:"Adia possessão involuntária 1 cena extra, mas bloqueia poder de Êxtase nessa cena."},{n:"Amuleto de Contenção",d:"Reduz perda de Sanidade de Somos Um em 1d4. A entidade odeia-o."},{n:"Telemóvel (sem SIM)",d:"Só tem fotos — lugares, rostos, símbolos. Nenhum identificado."}]},
 
-  {id:"farah",initials:"FH",name:"Farah Haddad",nac:"Libanesa",idade:"31 anos",ocup:"Curadora de Arte / Avaliadora",classe:"Especialista",trilha:"Investigador",origem:"Artista",dif:"Médio",difb:"fb-amber",ab:"#2A1A05",at:"#FFF3E0",pw:"beirute2006",gp:"Análise de objectos, zero combate",
-  stats:{FOR:1,AGI:2,INT:5,PRE:3,VIG:2},pv:63,pe:50,san:52,desl:"9m",
-  defnote:"Defesa base 10. Farah evita confronto directo a todo o custo — não é uma combatente.",
-  pericias:[["Investigação","+15"],["Artes","+15"],["Intuição","+10"],["Atualidades","+10"],["Diplomacia","+5"],["Percepção","+5"]],
-  bg:"Farah tem 31 anos e cresceu em Beirute na reconstrução pós-guerra. Tornou-se avaliadora de leilões internacionais com olho clínico para falsificações.",
-  segredo:"Farah já avaliou este catálogo antes, sob outro nome. Reconhece três peças que não deviam estar à venda.",
-  chatNat:"نحتاج تقييمك الحقيقي، لا الرسمي. إن وجدت القطعة التي حذرتِ منها سابقاً، أخبرينا فوراً.",
-  chatEn:"We need your real assessment, not the official one. If the piece you warned us about is here, tell us immediately.",
-  trilha_habs:[{n:"NEX 10% — Olho Treinado",d:"Gaste 1 PE: teste livre de Investigação determina autenticidade."},{n:"NEX 40% — Rede de Contactos",d:"Gaste 2 PE: contacta especialista para informação sobre uma peça."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, examine uma fotografia antiga da sua família (livre) para restaurar 1 Ponto.",ns:[{n:"1 Ponto — Memória da Perda",c:"#D4AC0D",d:"Sente se um objecto foi roubado ou separado à força. +5 Investigação/Artes."},{n:"2 Pontos — Reconheço Isto",c:"#C0392B",d:"Revela uma verdade sobre o seu percurso até aqui. Perde 1 Sanidade."}]},
-  equip:[{n:"Lupa de Joalheiro",d:"+3 Investigação em autenticidade."},{n:"Catálogo Pessoal Anotado",d:"80+ peças de proveniência duvidosa. +2 Investigação."},{n:"Luvas de Algodão Brancas",d:"Manuseamento sem activar maldições de contacto."},{n:"Linha Directa a Avaliadores",d:"1 PE: segunda opinião externa."},{n:"Credenciais Casa de Leilões",d:"Acesso reservado. Detectar fraude: Investigação DT21."}]},
+{id:"helene",initials:"HV",name:"Hélène Vasseur",nac:"Belga",idade:"42 anos",ocup:"Negociadora de Reféns (Reformada)",classe:"Especialista",trilha:"Negociador",origem:"Policial",dif:"Médio",difb:"fb-amber",ab:"#1A2A0A",at:"#EEF7E0",pw:"bruxelas2010",gameplay:"SUPORTE/CONTROLO PURO — não causa dano. Vence cenas desarmando emocionalmente alvos e removendo condições de aliados. A única personagem do elenco que joga sem violência por princípio.",stats:{FOR:1,AGI:1,INT:3,PRE:5,VIG:2},pv:53,pe:80,san:65,desl:"9m",defnote:"Defesa base: 10. Não usa armas nem armadura por princípio. Depende de Diplomacia e Vontade para sobreviver a confrontos.",pericias:[["Diplomacia","+15"],["Vontade","+15"],["Intuição","+10"],["Percepção","+10"],["Medicina","+5"],["Enganação","+5"]],bg:"Hélène tem 42 anos e passou dezoito a negociar reféns para a polícia federal belga, com uma taxa de sucesso lendária. Reformou-se compulsivamente depois de um caso em Antuérpia em que negociou durante onze horas seguidas e, ainda assim, perdeu duas vítimas. Foi recrutada precisamente pela capacidade rara de manter a calma quando tudo desmorona — e pela disposição de nunca recorrer à força, mesmo quando seria mais fácil.",segredo:"Hélène reconheceu, na lista de convidados, o nome de um suspeito do caso de Antuérpia que nunca foi capturado. Não disse nada à organização — ainda.",chatNat:"We're not sending you in to fight. We're sending you in because you can talk anyone down from anything. If this turns violent, that means everyone else has already failed — including us.",chatEn:"We're not sending you in to fight. We're sending you in because you can talk anyone down from anything. If this turns violent, that means everyone else has already failed — including us.",trilha_habs:[{n:"NEX 10% — Voz Calma",d:"Uma vez por cena, gaste 2 PE: teste de Diplomacia como acção de movimento contra alvo Abalado, Com Medo ou em pânico. Em sucesso, remove essa condição."},{n:"NEX 40% — Desarmar pela Palavra",d:"Gaste 3 PE: teste de Diplomacia oposto à Vontade de um alvo hostil. Em sucesso, o alvo larga qualquer arma e não pode reequipá-la nesse turno."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, ouça a gravação do caso de Antuérpia sem a desligar antes do fim (acção completa) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — Onze Horas",c:"#D4AC0D",d:"Durante 1 cena, todos os testes de Diplomacia e Vontade têm vantagem automática. Nunca pode ser surpreendida em diálogo."},{n:"2 Pontos — Não Vou Perder Outra Vez",c:"#C0392B",d:"Teste de Diplomacia (DT = Vontade do alvo +10). Em sucesso, o alvo rende-se ou recua da cena, incapaz de agir contra a equipa até ao fim do episódio. Hélène perde 1d6 Sanidade — cada vitória reabre a ferida de Antuérpia."}]},equip:[{n:"Gravador Áudio do Caso de Antuérpia",d:"Objecto pessoal — gatilho do poder de Êxtase."},{n:"Auricular Discreto",d:"Comunicação constante com a equipa sem falar. Alcance 2km."},{n:"Dossiês Psicológicos Rápidos",d:"+2 em Intuição para avaliar estado emocional de qualquer pessoa observada 1 minuto."},{n:"Cartão de Mediadora Internacional",d:"Credencial legítima. Abre portas em contextos formais."},{n:"Calmante Oral (não letal) ×3",d:"Discretamente numa bebida: Fortitude DT 13 ou Sonolento, –5 em todos os testes durante 1h."}]},
+
+{id:"kavi",initials:"KR",name:"Kaviya Rao",nac:"Indiana",idade:"39 anos",ocup:"Sacerdotisa / Guardiã Ritual",classe:"Ocultista",trilha:"Acólito",origem:"Religioso",dif:"Médio",difb:"fb-amber",ab:"#2A1A2A",at:"#F7E0F7",pw:"varanasi2008",gameplay:"OCULTISTA DE ÁREA E SUPORTE — protege e fortalece toda a equipa em simultâneo via rituais sustentados. Joga em função do grupo, nunca de um alvo. Oposto mecânico de Valentina (ofensiva) e Nikolaj (risco pessoal).",stats:{FOR:1,AGI:1,INT:2,PRE:5,VIG:3},pv:54,pe:80,san:65,desl:"9m",defnote:"Defesa base: 10. Evita combate directo. Função: manter rituais de protecção activos enquanto a equipa actua. Vontade (+10) como reacção vs efeitos mentais.",pericias:[["Ocultismo","+15"],["Religião","+10"],["Vontade","+10"],["Intuição","+10"],["Medicina","+5"],["Diplomacia","+5"]],bg:"Kaviya tem 39 anos e foi criada num templo à beira do Ganges em Varanasi, onde a sua família mantém, há gerações, rituais de protecção contra entidades que cruzam durante cerimónias fúnebres. O seu verdadeiro conhecimento veio da prática directa, ensinada de mãe para filha. Foi recrutada depois de neutralizar, sozinha, uma manifestação que ameaçava uma peregrinação inteira.",segredo:"Kaviya sente que o local já foi usado para um ritual antes — um ritual incompleto, cujo eco ainda não se dissipou. Não sabe se isso é relevante para a missão ou apenas um resíduo do passado.",chatNat:"हमें नहीं पता कि अंदर क्या होगा, लेकिन हम जानते हैं कि बाकी सब आपके सुरक्षा घेरे पर निर्भर रहेंगे। टीम को सुरक्षित रखें, चाहे कुछ भी हो जाए — यही आपकी असली भूमिका है।",chatEn:"We don't know what's waiting inside, but we know everyone else will be relying on your protective circle. Keep the team safe, whatever happens in there — that's your real role.",trilha_habs:[{n:"NEX 10% — Círculo Menor",d:"Gaste 2 PE: área de 4,5m de raio. Todos os aliados dentro ganham +2 em Vontade e Fortitude durante 1 cena. Mantém-se activa enquanto Kaviya não for incapacitada."},{n:"NEX 40% — Bênção Compartilhada",d:"Gaste 3 PE: escolha até 3 aliados em alcance curto. Cada um recebe 1d6 PV temporários e resistência a um tipo de dano à escolha de Kaviya durante 1 cena."}],poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, acenda uma vela e recite os nomes dos seus antepassados guardiões (acção completa) para restaurar 2 Pontos de Êxtase.",ns:[{n:"1 Ponto — Círculo dos Antepassados",c:"#D4AC0D",d:"Todos os aliados num raio de 9m ficam protegidos: o primeiro ataque que cada um sofreria nesta cena erra automaticamente. Efeito único por aliado."},{n:"2 Pontos — O Templo Não Cai",c:"#C0392B",d:"Durante 1 cena, sempre que um aliado em alcance de 9m seria reduzido a 0 PV, fica com 1 PV em vez disso (uma vez por aliado). Kaviya perde 2d4 Sanidade no fim — sustentar tantas vidas deixa marcas."}]},equip:[{n:"Conjunto Ritual de Latão Herdado",d:"Sineta, incenso e tigela cerimonial. Necessário para activar Círculo Menor e Bênção sem penalidade."},{n:"Pó Sagrado do Ganges ×5",d:"Remove 1 condição de medo ou possessão leve de um aliado. Sem acção adicional."},{n:"Têxtil Cerimonial (sari protector)",d:"Reconhecido por algumas entidades como símbolo de tréguas — pode evitar primeiro ataque."},{n:"Rosário de Sândalo",d:"Foco para Vontade. +2 em testes de Vontade enquanto seguro na mão."},{n:"Carta de Recomendação do Templo",d:"+2 em Diplomacia ao interagir com figuras religiosas ou espirituais."}]},
 ];
 
-// ===== PERSONAGEM 1: Especialista Bibliotecário — não-combate puro, suporte de informação =====
-A.push({id:"helena",initials:"HV",name:"Helena Vantongeren",nac:"Belga",idade:"58 anos",ocup:"Arquivista / Bibliotecária Especializada",classe:"Especialista",trilha:"Bibliotecário",origem:"Acadêmico",dif:"Difícil",difb:"fb-red",ab:"#1A1408",at:"#FFF8E0",pw:"gante1989",gp:"Quase nula em combate — vence através de informação prévia",
-  stats:{FOR:1,AGI:1,INT:5,PRE:3,VIG:1},pv:33,pe:50,san:52,desl:"6m",
-  defnote:"Defesa base 10. Sem treino em Fortitude ou Reflexos — não tem bloqueio nem esquiva disponíveis. Helena depende inteiramente de nunca estar em combate.",
-  pericias:[["Investigação","+15"],["Ocultismo","+10"],["Atualidades","+15"],["Religião","+10"],["Diplomacia","+5"],["Intuição","+5"]],
-  bg:"Helena tem 58 anos e geriu durante três décadas o arquivo restrito de uma fundação académica belga dedicada a manuscritos perdidos. Nunca disparou uma arma, nunca correu mais de cem metros. A sua relevância para a organização não está no corpo mas na cabeça: memorizou milhares de proveniências, sabe que livro saiu de que biblioteca saqueada e quando, e consegue prever o que um catálogo de leilão paranormal vai conter antes de o ler. É a pessoa que a organização chama quando precisa de saber o que algo é antes de qualquer agente se aproximar dele.",
-  segredo:"Helena identificou, num esboço do catálogo enviado antecipadamente, uma referência a um livro que ela própria ajudou a desaparecer de um arquivo europeu há vinte anos — por ordens da organização. Nunca soube o que lhe aconteceu depois. Agora sabe.",
-  chatNat:"We need a full provenance report before anyone sets foot inside. You're not going in — you're the reason the rest of them know what they're looking at. Work fast.",
-  chatEn:"We need a full provenance report before anyone sets foot inside. You're not going in — you're the reason the rest of them know what they're looking at. Work fast.",
-  trilha_habs:[{n:"NEX 10% — Repositório Vivo",d:"Uma vez por cena, gaste 2 PE para fazer um teste de Atualidades (DT 20) e obter uma informação útil relevante sobre qualquer tópico, pessoa ou objecto à escolha do Mestre."},{n:"NEX 40% — Memória Perfeita",d:"Helena nunca esquece nada que tenha lido ou visto uma vez. Pode recordar com precisão qualquer documento, imagem ou conversa testemunhada, mesmo anos depois, sem necessidade de teste."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, catalogue mentalmente um objecto ou documento perdido que nunca recuperou (acção livre) para restaurar 1 Ponto.",ns:[{n:"1 Ponto — Já Vi Isto Antes",c:"#D4AC0D",d:"Ao examinar qualquer documento, símbolo ou objecto catalogável, sabe automaticamente a sua origem aproximada e um facto histórico relevante, sem necessidade de teste."},{n:"2 Pontos — O Livro Que Desapareci",c:"#C0392B",d:"Helena confronta uma verdade que evitou durante vinte anos. Ganha conhecimento certo e completo sobre a proveniência exacta de um único objecto à escolha — mas perde 1d6 de Sanidade ao reconhecer a sua própria cumplicidade no passado."}]},
-  equip:[{n:"Arquivo Pessoal Portátil (HD encriptado)",d:"Décadas de registos digitalizados. +3 em Investigação sempre que consultado, mas requer 1 acção completa para pesquisar."},{n:"Óculos de Leitura com Lupa Integrada",d:"Permite examinar detalhes microscópicos em documentos e selos sem equipamento adicional."},{n:"Caderno de Notas Cifrado",d:"Sistema de cifra pessoal desenvolvido ao longo de 30 anos. Ilegível para qualquer pessoa que não seja Helena, mesmo com Tecnologia DT 25."},{n:"Cartão de Acesso a Bibliotecas Restritas (Europa)",d:"Abre portas em 14 arquivos académicos e religiosos europeus. Não funciona fora da Europa."},{n:"Bengala de Madeira de Carvalho",d:"Arma simples improvisada. Dano 1d4 (sem bónus de FOR — Helena não tem treino de combate nenhum)."}]});
-
-// ===== PERSONAGEM 2: Combatente Comandante de Campo — não ataca, mas controla a equipa toda =====
-A.push({id:"viktor",initials:"VP",name:"Viktor Petrenko",nac:"Ucraniano",idade:"49 anos",ocup:"Ex-Coronel / Consultor Táctico",classe:"Combatente",trilha:"Comandante de Campo",origem:"Militar",dif:"Médio",difb:"fb-amber",ab:"#1A2A0A",at:"#F0FFE0",pw:"kharkiv2014",gp:"Não combate directamente — multiplica a força da equipa inteira",
-  stats:{FOR:2,AGI:1,INT:3,PRE:5,VIG:3},pv:86,pe:50,san:39,desl:"9m",
-  defnote:"Defesa base 10. Bloqueio com Fortitude (+10) disponível, mas Viktor é desenhado para ficar atrás da linha, não para liderar o ataque.",
-  pericias:[["Tática","+15"],["Intimidação","+15"],["Liderança","+10"],["Percepção","+10"],["Fortitude","+10"],["Investigação","+5"]],
-  bg:"Viktor tem 49 anos e comandou um batalhão inteiro antes de uma decisão política o afastar do activo. Não é o homem mais forte numa sala nem o mais rápido — é o homem que vê o campo de batalha como um tabuleiro e sabe exactamente onde cada peça deve estar. Raramente dispara uma arma. Em vez disso, observa, calcula, e dá ordens que transformam cinco pessoas competentes numa unidade imparável. A organização recruta-o precisamente por isso: ele torna todos os outros agentes melhores.",
-  segredo:"Viktor foi afastado do exército não por decisão política, mas porque recusou executar uma ordem que considerou um crime de guerra. A organização sabe disso — e usa-o exactamente pelos mesmos princípios que o exército rejeitou.",
-  chatNat:"Команда повністю довіряє вашій оцінці ситуації на місці. Координуйте позиціонування агентів і втручайтесь особисто лише в крайньому випадку.",
-  chatEn:"The team fully trusts your read of the situation on the ground. Coordinate agent positioning and only intervene personally as a last resort.",
-  trilha_habs:[{n:"NEX 10% — Olho Táctico",d:"Gaste 1 PE e uma acção de movimento para analisar o campo de batalha. Até ao fim da cena, todos os aliados que possam ouvir Viktor recebem +2 em testes de Iniciativa e Percepção."},{n:"NEX 40% — Coordenação Total",d:"Uma vez por rodada, como acção livre, Viktor pode gastar 2 PE para conceder a um aliado em alcance de voz uma acção de movimento extra imediata. Não pode usar isto em si próprio."}],
-  poder:{h:"2/2 Pontos de Êxtase",req:"Uma vez por cena de descanso, reveja mentalmente a ordem que recusou cumprir (acção livre) para restaurar 1 Ponto.",ns:[{n:"1 Ponto — Nunca Mais Aquela Ordem",c:"#D4AC0D",d:"Durante 1 cena, todos os aliados que possam ouvir Viktor ganham +5 em testes de ataque e Defesa. Viktor não pode atacar enquanto este efeito estiver activo."},{n:"2 Pontos — O Peso do Comando",c:"#C0392B",d:"Viktor assume publicamente a responsabilidade por qualquer erro da equipa nesta cena. Um aliado à escolha recupera metade dos PV máximos imediatamente, mas Viktor perde 1d6 de Sanidade — carregar a culpa alheia tem um preço."}]},
-  equip:[{n:"Rádio Táctico Multi-Canal",d:"Permite comunicação simultânea com até 6 agentes em canais separados. Essencial para usar as suas habilidades de trilha."},{n:"Binóculos Térmicos",d:"+3 em Percepção para identificar posições inimigas através de paredes finas ou em pouca visibilidade."},{n:"Pistola de Serviço (raramente usada)",d:"Dano 1d8 balístico. Viktor prefere não a disparar — é o último recurso, não o plano."},{n:"Colete Discreto",d:"Protecção 2. Suficiente para sobreviver enquanto coordena à distância, não para combate activo."},{n:"Mapa Táctico Portátil + Marcadores",d:"Ferramenta física de planeamento. Antes de qualquer missão, gaste 10 minutos para dar a toda a equipa +2 em testes relacionados com o plano traçado."}]});
-
-let cur=null;
 function bc(b){return b==='+5'?'b5':b==='+10'?'b10':'b15'}
+let cur=null;
 
 function doLogin(){
   const id=document.getElementById('lid').value.trim().toLowerCase();
@@ -353,6 +260,7 @@ function doLogout(){
   document.getElementById('lpw').value='';
   document.getElementById('as').style.display='block';
   document.getElementById('fv').style.display='none';
+  document.getElementById('atag').textContent='AGENTE: —';
 }
 document.getElementById('lpw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('lid').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
@@ -363,7 +271,7 @@ function buildGrid(){
   A.forEach(a=>{
     const me=a.id===cur.id;
     const d=document.createElement('div');
-    d.className='acard'+(me?'':' locked');
+    d.className='acard '+(me?'unlocked':'locked');
     d.innerHTML=`<div class="av" style="background:${a.ab};color:${a.at};border-color:${a.at}30">${a.initials}</div>
     <div class="aname">${a.name}</div>
     <div class="arole">${a.trilha}</div>
@@ -379,84 +287,71 @@ function buildGrid(){
 
 function openFicha(a){
   document.getElementById('as').style.display='none';
-  const fv=document.getElementById('fv');
-  fv.style.display='block';
+  document.getElementById('fv').style.display='block';
   document.getElementById('fc').innerHTML=`
     <div class="fhero">
       <div class="fav" style="background:${a.ab};color:${a.at};border-color:${a.at}40">${a.initials}</div>
       <div class="fhinfo">
         <div class="fname">${a.name}</div>
-        <div class="fsub">${a.nac} &nbsp;·&nbsp; ${a.idade} &nbsp;·&nbsp; ${a.ocup}</div>
+        <div class="fsub">${a.nac} · ${a.idade} · ${a.ocup}</div>
         <div class="fbadges">
           <span class="fb fb-gold">${a.classe}</span>
           <span class="fb fb-dim">${a.trilha}</span>
           <span class="fb fb-dim">Origem: ${a.origem}</span>
           <span class="fb fb-green">NEX 50%</span>
           <span class="fb ${a.difb}">${a.dif}</span>
-          <span class="fb gp-tag">${a.gp}</span>
         </div>
       </div>
     </div>
-
+    <div class="gameplay-tag">▸ ESTILO DE JOGO: ${a.gameplay}</div>
     <div class="chat-wrap">
-      <div class="chat-head">
-        <div class="chat-dot"></div>
-        <div class="chat-head-txt">Canal Seguro — Mensagem do Comando</div>
-      </div>
+      <div class="chat-head"><div class="chat-dot"></div><div class="chat-head-txt">Canal Seguro — Mensagem do Comando</div></div>
       <div class="chat-body">
         <div class="chat-bubble">
-          <div class="chat-sender">Comando &nbsp;·&nbsp; Não Identificado</div>
-          <div class="chat-text-native">${a.chatNat}</div>
-          <div class="chat-divider"></div>
-          <div class="chat-text-en">${a.chatEn}</div>
+          <div class="chat-sender">Comando · Não Identificado</div>
+          <div class="chat-nat">${a.chatNat}</div>
+          <div class="chat-div"></div>
+          <div class="chat-en">${a.chatEn}</div>
           <div class="chat-time">ENVIADO ANTES DO INÍCIO DA OPERAÇÃO</div>
         </div>
       </div>
     </div>
-
     <div class="fgrid">
       <div class="fcol">
         <div class="fsec">
           <div class="fsec-h"><div class="fsec-lbl" style="color:var(--gold)">Atributos</div></div>
-          <div class="fsec-b">
-            <div class="sgrid">${Object.entries(a.stats).map(([k,v])=>`<div class="scell"><div class="sv">${v}</div><div class="sl">${k}</div></div>`).join('')}</div>
-          </div>
+          <div class="fsec-b"><div class="sgrid">${Object.entries(a.stats).map(([k,v])=>`<div class="scell"><div class="sv">${v}</div><div class="sl">${k}</div></div>`).join('')}</div></div>
         </div>
         <div class="fsec">
           <div class="fsec-h"><div class="fsec-lbl" style="color:var(--red-lt)">Recursos</div></div>
           <div class="fsec-b">
             <div class="rgrid">
-              <div class="rcell" style="border-color:var(--red)"><div class="rv">${a.pv}</div><div class="rl">PV</div></div>
+              <div class="rcell" style="border-color:var(--red-lt)"><div class="rv">${a.pv}</div><div class="rl">PV</div></div>
               <div class="rcell" style="border-color:var(--green-lt)"><div class="rv">${a.pe}</div><div class="rl">PE máx</div></div>
               <div class="rcell" style="border-color:var(--purple-lt)"><div class="rv">${a.san}</div><div class="rl">SAN</div></div>
             </div>
-            <div style="margin-top:.5rem;font-size:9.5px;color:var(--text-dim);text-align:center">Deslocamento: ${a.desl}</div>
+            <div style="margin-top:.5rem;font-size:9.5px;color:var(--text-dim);text-align:center">Deslocamento: ${a.desl} · Limite PE NEX50%: 10/turno</div>
           </div>
         </div>
         <div class="fsec">
-          <div class="fsec-h"><div class="fsec-lbl" style="color:#6aabef">Defesas</div></div>
+          <div class="fsec-h"><div class="fsec-lbl" style="color:var(--blue-lt)">Defesas</div></div>
           <div class="fsec-b">
             <div class="rgrid">
               <div class="rcell" style="border-color:#2a5a8a"><div class="rv">10+arm</div><div class="rl">Passiva</div></div>
-              <div class="rcell" style="border-color:#6a3a9a"><div class="rv">Reacção</div><div class="rl">Bloqueio</div></div>
-              <div class="rcell" style="border-color:var(--green-lt)"><div class="rv">Reacção</div><div class="rl">Esquiva</div></div>
+              <div class="rcell" style="border-color:#6a3a9a"><div class="rv">Reacção</div><div class="rl">Bloqueio</div><div class="rsub">Fort. treinada</div></div>
+              <div class="rcell" style="border-color:var(--green-lt)"><div class="rv">Reacção</div><div class="rl">Esquiva</div><div class="rsub">Refl. treinados</div></div>
             </div>
             <div class="def-note">${a.defnote}</div>
           </div>
         </div>
         <div class="fsec">
-          <div class="fsec-h">
-            <div class="fsec-lbl" style="color:var(--text-mid)">Perícias</div>
-            <div style="font-size:7px;color:var(--text-dim);font-family:monospace">+5/+10/+15</div>
-          </div>
-          <div class="fsec-b" style="padding:.5rem .9rem">
-            ${a.pericias.map(([n,b])=>`<div class="prow"><span class="pn">${n}</span><span class="pb ${bc(b)}">${b}</span></div>`).join('')}
-          </div>
+          <div class="fsec-h"><div class="fsec-lbl" style="color:var(--text-mid)">Perícias</div><div style="font-size:7.5px;color:var(--text-dim);font-family:monospace">+5 trein · +10 vet · +15 exp</div></div>
+          <div class="fsec-b" style="padding:.5rem 1rem">${a.pericias.map(([n,b])=>`<div class="prow"><span class="pn">${n}</span><span class="pb ${bc(b)}">${b}</span></div>`).join('')}</div>
         </div>
         <div class="fsec">
           <div class="fsec-h"><div class="fsec-lbl" style="color:var(--gold2)">Poder de Êxtase</div></div>
           <div class="fsec-b">
-            <div style="background:rgba(58,26,90,.15);border:1px solid rgba(58,26,90,.3);border-radius:var(--r);padding:.85rem .9rem">
+            <div style="background:rgba(58,26,90,.15);border:1px solid rgba(58,26,90,.3);border-radius:var(--r);padding:.9rem 1rem">
               <div class="ph">${a.poder.h}</div>
               <div class="preq">${a.poder.req}</div>
               ${a.poder.ns.map(n=>`<div class="pniv"><div class="pnn" style="color:${n.c}">${n.n}</div><div class="pnd">${n.d}</div></div>`).join('')}
@@ -475,15 +370,11 @@ function openFicha(a){
         </div>
         <div class="fsec">
           <div class="fsec-h"><div class="fsec-lbl" style="color:var(--green-lt)">Trilha: ${a.trilha}</div></div>
-          <div class="fsec-b">
-            ${a.trilha_habs.map(h=>`<div class="hitem"><div class="hn">${h.n}</div><div class="hd">${h.d}</div></div>`).join('')}
-          </div>
+          <div class="fsec-b">${a.trilha_habs.map(h=>`<div class="hitem"><div class="hn">${h.n}</div><div class="hd">${h.d}</div></div>`).join('')}</div>
         </div>
         <div class="fsec">
           <div class="fsec-h"><div class="fsec-lbl" style="color:var(--gold)">Equipamento</div></div>
-          <div class="fsec-b">
-            ${a.equip.map(e=>`<div class="eitem"><div class="en">${e.n}</div><div class="ed">${e.d}</div></div>`).join('')}
-          </div>
+          <div class="fsec-b">${a.equip.map(e=>`<div class="eitem"><div class="en">${e.n}</div><div class="ed">${e.d}</div></div>`).join('')}</div>
         </div>
       </div>
     </div>`;
